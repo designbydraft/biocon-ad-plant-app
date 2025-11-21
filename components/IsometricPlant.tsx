@@ -10,7 +10,7 @@ interface IsometricPlantProps {
 interface LabelTextProps {
   x: string | number;
   y: string | number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   align?: "start" | "middle" | "end";
 }
 

@@ -3,12 +3,14 @@ import React, { useState, useMemo } from 'react';
 import IsometricPlant from './components/IsometricPlant';
 import InfoPanel from './components/InfoPanel';
 import { PLANT_DATA, FEEDSTOCKS } from './constants';
-import { Info, Leaf, Wind, Zap, ChevronDown } from 'lucide-react';
+import { Info, Leaf, Wind, Zap, ChevronDown, Plus, Minus, Undo2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const App: React.FC = () => {
   const [selectedPartId, setSelectedPartId] = useState<string | null>(null);
   const [activeFeedstockId, setActiveFeedstockId] = useState<string>('manure');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
 
   const selectedPart = selectedPartId ? PLANT_DATA[selectedPartId] : null;
   const currentFeedstock = FEEDSTOCKS[activeFeedstockId];
@@ -34,6 +36,22 @@ const App: React.FC = () => {
   const handleBackgroundClick = () => {
     setIsMenuOpen(false);
     setSelectedPartId(null);
+  };
+
+  // Zoom Handlers
+  const handleZoomIn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom(z => Math.min(z + 0.25, 2.5));
+  };
+
+  const handleZoomOut = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom(z => Math.max(z - 0.25, 0.5));
+  };
+
+  const handleResetZoom = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setZoom(1);
   };
 
   return (
@@ -112,14 +130,40 @@ const App: React.FC = () => {
       </header>
 
       {/* Main 3D Viewport */}
-      <main className="flex-1 relative cursor-move sm:cursor-auto" onClick={handleBackgroundClick}>
-        <div className="absolute inset-0 flex items-center justify-center p-4 md:p-10">
-          <IsometricPlant 
-            onPartSelect={handlePartSelect} 
-            activePart={selectedPartId}
-            feedstockColor={currentFeedstock.color}
-          />
+      <main className="flex-1 relative overflow-hidden bg-slate-50/50 cursor-grab active:cursor-grabbing" onClick={handleBackgroundClick}>
+        
+        {/* Zoom Controls */}
+        <div className="absolute bottom-24 right-4 flex flex-col gap-2 z-30 pointer-events-auto">
+           <button onClick={handleZoomIn} className="bg-white p-2.5 rounded-xl shadow-lg text-slate-600 hover:bg-slate-50 hover:text-brand border border-slate-100 transition-colors">
+             <Plus size={20} />
+           </button>
+           <button onClick={handleResetZoom} className="bg-white p-2.5 rounded-xl shadow-lg text-slate-600 hover:bg-slate-50 hover:text-brand border border-slate-100 transition-colors">
+             <Undo2 size={20} />
+           </button>
+           <button onClick={handleZoomOut} className="bg-white p-2.5 rounded-xl shadow-lg text-slate-600 hover:bg-slate-50 hover:text-brand border border-slate-100 transition-colors">
+             <Minus size={20} />
+           </button>
         </div>
+
+        <motion.div 
+          className="w-full h-full flex items-center justify-center touch-none"
+          drag
+          dragConstraints={{ left: -500, right: 500, top: -300, bottom: 300 }}
+          dragElastic={0.2}
+          animate={{ scale: zoom }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <div className="w-full max-w-5xl p-4 md:p-10 pointer-events-none">
+             {/* Interactive children must enable pointer events */}
+             <div className="pointer-events-auto">
+                <IsometricPlant 
+                  onPartSelect={handlePartSelect} 
+                  activePart={selectedPartId}
+                  feedstockColor={currentFeedstock.color}
+                />
+             </div>
+          </div>
+        </motion.div>
         
         {/* Hint Overlay if nothing selected */}
         {!selectedPartId && (
