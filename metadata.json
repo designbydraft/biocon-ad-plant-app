@@ -1,5 +1,5 @@
 {
-  "name": "BioEnergy Sim: Interactive AD Plant",
+  "name": "BIOCON Group AD Simulator",
   "description": "A 2.5D isometric interactive educational model of an Anaerobic Digestion plant. Explore the biological process of converting organic waste into renewable energy.",
   "requestFramePermissions": []
 }

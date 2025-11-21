@@ -9,20 +9,24 @@ interface IsometricPlantProps {
 
 // Helper for consistent text styling with halo effect for readability
 const LabelText = ({ x, y, children, align = "middle" }: { x: string | number, y: string | number, children: React.ReactNode, align?: "start" | "middle" | "end" }) => (
-  <text 
-    x={x} 
-    y={y} 
-    fontSize="16" 
-    fontWeight="800" 
-    fill="#475569" 
-    stroke="#f0fdf4" 
-    strokeWidth="4" 
-    paintOrder="stroke" 
-    textAnchor={align}
-    className="pointer-events-none select-none uppercase tracking-wide font-sans"
-  >
-    {children}
-  </text>
+  <g style={{ pointerEvents: 'none' }}>
+    <text 
+      x={x} 
+      y={y} 
+      fontSize="14" 
+      fontWeight="700" 
+      fill="#334155" 
+      stroke="white" 
+      strokeWidth="6" 
+      strokeLinejoin="round"
+      paintOrder="stroke" 
+      textAnchor={align}
+      className="select-none uppercase tracking-wider font-sans"
+      style={{ textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+    >
+      {children}
+    </text>
+  </g>
 );
 
 const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePart, feedstockColor }) => {
@@ -119,7 +123,7 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
             animate={{ fill: feedstockColor }}
             transition={{ duration: 0.5 }}
           />
-          <LabelText x="170" y="420">Feedstock</LabelText>
+          <LabelText x="180" y="450">Feedstock</LabelText>
         </g>
 
         {/* --- 2. FEEDER SYSTEM --- */}
@@ -133,7 +137,7 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
           <path d="M250 340 L310 310 L340 325 L280 355 Z" fill={getFill('feeder', '#ca8a04', '#facc15')} stroke={getStroke('feeder')} strokeWidth="2" />
           <path d="M250 340 L280 355 L280 390 L250 375 Z" fill={getFill('feeder', '#854d0e', '#d97706')} />
           <path d="M280 355 L340 325 L340 360 L280 390 Z" fill={getFill('feeder', '#a16207', '#eab308')} />
-          <LabelText x="320" y="400">Feeder</LabelText>
+          <LabelText x="320" y="420">Feeder</LabelText>
         </g>
 
         {/* --- 3. DIGESTER TANK (Center) --- */}
@@ -151,7 +155,7 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
           {/* Highlight / Reflection */}
           <path d="M410 310 A 90 45 0 0 0 430 390" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="5" />
 
-          <LabelText x="500" y="480">Digester</LabelText>
+          <LabelText x="500" y="520">Digester</LabelText>
         </g>
 
         {/* --- 4. GAS HOLDER (Top of Digester) --- */}
@@ -190,7 +194,7 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
           <circle cx="800" cy="250" r="15" fill="#333" />
           <path d="M785 250 L815 250 M800 235 L800 265" stroke="#999" strokeWidth="4" className="origin-[800px_250px] animate-spin" />
           
-          <LabelText x="750" y="360">CHP / Power</LabelText>
+          <LabelText x="840" y="340">CHP / Power</LabelText>
         </g>
 
         {/* --- PIPE: Digestate to Separator --- */}
@@ -211,7 +215,7 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
           
           {/* Machinery */}
           <path d="M660 400 L700 380 L700 410 L660 430 Z" fill={getFill('separator', '#a8a29e', '#d6d3d1')} />
-          <LabelText x="680" y="500">Separator</LabelText>
+          <LabelText x="660" y="490">Separator</LabelText>
         </g>
 
         {/* --- 7. STORAGE LAGOON (Bottom Right) --- */}
@@ -227,13 +231,13 @@ const IsometricPlant: React.FC<IsometricPlantProps> = ({ onPartSelect, activePar
           {/* Liquid */}
           <ellipse cx="800" cy="455" rx="65" ry="30" fill={getFill('storage', '#44403c', '#78716c')} opacity="0.9" />
           
-          <LabelText x="800" y="540">Digestate</LabelText>
+          <LabelText x="860" y="540">Digestate</LabelText>
         </g>
 
         {/* Electrical Lines */}
         <path d="M740 230 L850 100" stroke="#fbbf24" strokeWidth="2" strokeDasharray="10,10" />
         <circle cx="850" cy="100" r="5" fill="#fbbf24" className="animate-pulse" />
-        <LabelText x="880" y="105" align="end">Grid</LabelText>
+        <LabelText x="920" y="80" align="end">Grid</LabelText>
 
       </svg>
     </div>

@@ -36,15 +36,14 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-b from-slate-50 to-green-50 overflow-hidden flex flex-col">
+    <div className="relative w-full h-screen bg-gradient-to-b from-slate-50 to-[#F4F3FA] overflow-hidden flex flex-col">
       
       {/* Header HUD */}
       <header className="absolute top-0 left-0 w-full p-4 md:p-6 z-10 flex flex-col md:flex-row justify-between items-start pointer-events-none gap-4">
         <div className="pointer-events-auto flex flex-col gap-2">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-              <Leaf className="text-green-600" />
-              BioEnergy <span className="text-green-600">Sim</span>
+              BIOCON Group <span className="text-[#F29220]">AD Simulator</span>
             </h1>
             <p className="text-slate-500 text-sm mt-1 hidden md:block max-w-md">
               Interactive Anaerobic Digestion Model.
