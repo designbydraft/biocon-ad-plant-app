@@ -94,6 +94,16 @@ export const PLANT_DATA: Record<string, PlantPart> = {
   }
 };
 
+export interface FeedstockStyles {
+  dotColor: string;
+  iconBg: string;
+  iconText: string;
+  alertBg: string;
+  alertBorder: string;
+  alertTitle: string;
+  alertText: string;
+}
+
 export interface Feedstock {
   id: string;
   name: string;
@@ -101,7 +111,8 @@ export interface Feedstock {
   yieldFactor: number;
   methaneContent: string;
   color: string; // Hex for SVG visualization
-  themeClass: string; // Tailwind color theme prefix (e.g., 'amber')
+  themeClass: string; // Keep for reference
+  styles: FeedstockStyles; // Explicit classes for Tailwind
   impacts: Record<string, string>;
 }
 
@@ -114,6 +125,15 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     methaneContent: '55%',
     color: '#5D4037', // Dark Brown
     themeClass: 'amber',
+    styles: {
+      dotColor: 'bg-amber-500',
+      iconBg: 'bg-amber-100',
+      iconText: 'text-amber-600',
+      alertBg: 'bg-amber-50',
+      alertBorder: 'border-amber-500',
+      alertTitle: 'text-amber-800',
+      alertText: 'text-amber-900'
+    },
     impacts: {
       'feedstock': 'Pumped as liquid slurry or loaded as solid muck. Requires less maceration than crops.',
       'digester': 'Provides excellent buffering bacteria stability, though gas yield per volume is lower.',
@@ -129,6 +149,15 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     methaneContent: '52%',
     color: '#a3e635', // Bright Green
     themeClass: 'lime',
+    styles: {
+      dotColor: 'bg-lime-500',
+      iconBg: 'bg-lime-100',
+      iconText: 'text-lime-600',
+      alertBg: 'bg-lime-50',
+      alertBorder: 'border-lime-500',
+      alertTitle: 'text-lime-800',
+      alertText: 'text-lime-900'
+    },
     impacts: {
       'feedstock': 'Stored in silage clamps. Requires intensive maceration to break down fibers.',
       'digester': 'High gas yield requires careful monitoring of pH to prevent acidosis.',
@@ -144,6 +173,15 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     methaneContent: '58%',
     color: '#d97706', // Orange/Brown mix
     themeClass: 'orange',
+    styles: {
+      dotColor: 'bg-orange-500',
+      iconBg: 'bg-orange-100',
+      iconText: 'text-orange-600',
+      alertBg: 'bg-orange-50',
+      alertBorder: 'border-orange-500',
+      alertTitle: 'text-orange-800',
+      alertText: 'text-orange-900'
+    },
     impacts: {
       'feedstock': 'Requires de-packaging and a pasteurization step (70°C for 1hr) to kill pathogens.',
       'digester': 'Rapid degradation rates. Can be volatile; requires consistent feeding.',

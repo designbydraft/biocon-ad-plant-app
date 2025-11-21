@@ -105,13 +105,13 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, metrics, 
                 <motion.div 
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className={`rounded-xl p-4 border-l-4 bg-${currentFeedstock.themeClass}-50 border-${currentFeedstock.themeClass}-500`}
+                  className={`rounded-xl p-4 border-l-4 ${currentFeedstock.styles.alertBg} ${currentFeedstock.styles.alertBorder}`}
                 >
-                  <h3 className={`text-sm font-bold mb-1 text-${currentFeedstock.themeClass}-800 flex items-center gap-2`}>
+                  <h3 className={`text-sm font-bold mb-1 ${currentFeedstock.styles.alertTitle} flex items-center gap-2`}>
                     <AlertCircle size={16} />
                     Impact of {currentFeedstock.name}
                   </h3>
-                  <p className={`text-${currentFeedstock.themeClass}-900 text-sm leading-relaxed`}>
+                  <p className={`${currentFeedstock.styles.alertText} text-sm leading-relaxed`}>
                     {currentFeedstock.impacts[part.id]}
                   </p>
                 </motion.div>

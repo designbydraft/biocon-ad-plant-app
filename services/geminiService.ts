@@ -1,8 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import { PLANT_DATA, Feedstock } from "../constants";
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-;
+const API_KEY = process.env.API_KEY;
 
 let aiClient: GoogleGenAI | null = null;
 

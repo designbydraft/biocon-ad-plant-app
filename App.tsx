@@ -57,7 +57,7 @@ const App: React.FC = () => {
               className="bg-white shadow-md border border-slate-200 rounded-lg px-4 py-2 flex items-center gap-3 hover:bg-slate-50 transition-colors min-w-[200px] justify-between"
             >
               <div className="flex items-center gap-2">
-                 <span className={`w-3 h-3 rounded-full bg-${currentFeedstock.themeClass}-500`}></span>
+                 <span className={`w-3 h-3 rounded-full ${currentFeedstock.styles.dotColor}`}></span>
                  <span className="font-semibold text-slate-700 text-sm">{currentFeedstock.name}</span>
               </div>
               <ChevronDown size={16} className="text-slate-400" />
@@ -72,7 +72,7 @@ const App: React.FC = () => {
                     onClick={() => { setActiveFeedstockId(fs.id); setIsMenuOpen(false); }}
                     className={`w-full text-left px-4 py-3 hover:bg-slate-50 flex items-center gap-3 border-b last:border-0 border-slate-50 ${activeFeedstockId === fs.id ? 'bg-blue-50/50' : ''}`}
                   >
-                    <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 bg-${fs.themeClass}-100 text-${fs.themeClass}-600`}>
+                    <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${fs.styles.iconBg} ${fs.styles.iconText}`}>
                       <Leaf size={16} />
                     </div>
                     <div>
