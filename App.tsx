@@ -122,9 +122,11 @@ const App: React.FC = () => {
         
         {/* Hint Overlay if nothing selected */}
         {!selectedPartId && (
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-4 py-2 rounded-full shadow-lg text-slate-500 text-sm flex items-center gap-2 pointer-events-none animate-bounce">
-            <Info size={16} />
-            Click on a plant section to learn more
+          <div className="absolute bottom-12 left-0 right-0 flex justify-center pointer-events-none z-20 px-4">
+            <div className="bg-white/90 backdrop-blur-md border border-white/50 px-6 py-3 rounded-full shadow-xl flex items-center gap-2">
+              <Info size={18} className="text-[#F29220]" />
+              <span className="text-slate-600 text-sm font-medium whitespace-nowrap">Click on a plant section to learn more</span>
+            </div>
           </div>
         )}
       </main>
