@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { PlantPart, Feedstock } from '../constants';
-import { X, ChevronRight, Zap, Activity, MessageSquare, Send, Loader2, AlertCircle } from 'lucide-react';
+import { X, ChevronRight, Zap, Activity, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { askGeminiAboutPlant } from '../services/geminiService';
 
 interface InfoPanelProps {
   part: PlantPart | null;
@@ -11,12 +11,9 @@ interface InfoPanelProps {
   onClose: () => void;
 }
 
-const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, metrics, onClose }) => {
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, onClose }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -25,25 +22,10 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, metrics, 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Reset chat when part changes
+  // Reset state when part changes
   useEffect(() => {
-    setQuestion('');
-    setAnswer(null);
-    setIsLoading(false);
-  }, [part, currentFeedstock]);
-
-  const handleAskAI = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!question.trim() || !part) return;
-
-    setIsLoading(true);
-    setAnswer(null);
-    
-    const response = await askGeminiAboutPlant(question, part.id, currentFeedstock, metrics);
-    
-    setAnswer(response);
-    setIsLoading(false);
-  };
+    setIsExpanded(false);
+  }, [part]);
 
   // Animation variants based on device
   const panelVariants = {
@@ -90,14 +72,40 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, metrics, 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8">
             
-            {/* Main Description */}
+            {/* Main Description with Expandable Section */}
             <section>
               <h3 className="text-xs md:text-sm uppercase tracking-wider text-slate-400 font-bold mb-2 md:mb-3 flex items-center gap-2">
                 <Activity size={16} /> Process Overview
               </h3>
-              <p className="text-slate-700 leading-relaxed text-base md:text-lg">
+              <p className="text-slate-700 leading-relaxed text-base md:text-lg mb-3">
                 {part.fullDescription}
               </p>
+              
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <p className="text-slate-600 text-sm md:text-base leading-relaxed border-l-2 border-slate-200 pl-4 my-2">
+                      {part.expandedContent}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <button 
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="text-sm font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 mt-2 transition-colors"
+              >
+                {isExpanded ? (
+                  <>Read less <ChevronUp size={16} /></>
+                ) : (
+                  <>Read more <ChevronDown size={16} /></>
+                )}
+              </button>
             </section>
 
             {/* Feedstock Specific Impact Section - Shows only if impact exists */}
@@ -131,51 +139,6 @@ const InfoPanel: React.FC<InfoPanelProps> = ({ part, currentFeedstock, metrics, 
                 ))}
               </ul>
             </section>
-
-            {/* AI Assistant Section */}
-            <section className="border-t border-slate-100 pt-6">
-                <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-4 md:p-5 border border-indigo-100">
-                  <div className="flex items-center gap-2 mb-4 text-indigo-900">
-                    <MessageSquare size={20} className="text-indigo-600" />
-                    <h3 className="font-bold">Ask Engineering AI</h3>
-                  </div>
-                  
-                  {/* Chat Output */}
-                  {answer && (
-                    <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white p-4 rounded-lg shadow-sm text-slate-700 text-sm mb-4 border border-indigo-50"
-                    >
-                      <p>{answer}</p>
-                    </motion.div>
-                  )}
-
-                  {/* Chat Input */}
-                  <form onSubmit={handleAskAI} className="relative">
-                    <input
-                      type="text"
-                      value={question}
-                      onChange={(e) => setQuestion(e.target.value)}
-                      placeholder={`Ask about ${part.title.toLowerCase()}...`}
-                      className="w-full pl-4 pr-12 py-3 rounded-xl border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white text-sm shadow-sm"
-                      disabled={isLoading}
-                    />
-                    <button 
-                    type="submit"
-                    disabled={isLoading || !question}
-                    className="absolute right-2 top-2 p-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      {isLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                    </button>
-                  </form>
-                  <p className="text-xs text-indigo-400 mt-2 text-center">
-                    AI context aware of {currentFeedstock.name} and real-time data.
-                  </p>
-                </div>
-            </section>
-            
-            <div ref={messagesEndRef} />
           </div>
         </motion.div>
       )}

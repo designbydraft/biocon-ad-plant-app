@@ -7,8 +7,15 @@ interface IsometricPlantProps {
   feedstockColor: string;
 }
 
+interface LabelTextProps {
+  x: string | number;
+  y: string | number;
+  children: React.ReactNode;
+  align?: "start" | "middle" | "end";
+}
+
 // Helper for consistent text styling with halo effect for readability
-const LabelText = ({ x, y, children, align = "middle" }: { x: string | number, y: string | number, children: React.ReactNode, align?: "start" | "middle" | "end" }) => (
+const LabelText = ({ x, y, children, align = "middle" }: LabelTextProps) => (
   <g style={{ pointerEvents: 'none' }}>
     <text 
       x={x} 

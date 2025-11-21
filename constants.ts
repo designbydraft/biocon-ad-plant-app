@@ -1,8 +1,10 @@
+
 export interface PlantPart {
   id: string;
   title: string;
   shortDescription: string;
   fullDescription: string;
+  expandedContent: string;
   technicalDetails: string[];
   color: string;
 }
@@ -13,6 +15,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Feedstock Reception',
     shortDescription: 'Where organic waste enters the system.',
     fullDescription: 'The process begins here. Organic materials such as agricultural waste, manure, energy crops (like maize), or food waste are collected and stored. They are pre-treated to remove contaminants and macerated to increase surface area for bacteria.',
+    expandedContent: 'The reception area is the critical control point (CCP) for the plant. Incoming vehicles are weighed on a weighbridge to track tonnage. Loads are visually inspected and often tested for dry matter content. Strict biosecurity measures are in place to prevent the spread of disease, especially when handling animal by-products (ABP). Liquid feedstocks are discharged via sealed couplings into underground reception tanks, while solids are tipped into bays. Odor control systems, such as carbon filters or air extraction, are often installed here to minimize environmental impact.',
     technicalDetails: [
       'Input types: Slurry, Maize, Food Waste',
       'Pre-treatment: Maceration/Chopping',
@@ -25,6 +28,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Feeding System',
     shortDescription: 'Automated transfer of inputs to the digester.',
     fullDescription: 'Solid feedstock is loaded into a hopper which feeds the digester at a steady, controlled rate. Liquid feedstocks are pumped. A consistent feed rate is crucial for maintaining stable biological conditions inside the tank.',
+    expandedContent: 'The feeding module serves as the interface between raw storage and the biological process. It typically consists of a large hopper with moving floor slats or walking floors that push material towards mixing screws. These screws macerate the feedstock, chopping it into smaller particles to increase the surface area available for enzymatic attack by bacteria. The system is automated to feed small amounts frequently (e.g., every hour) rather than large slug loads, preventing shock loading which could destabilize the digester biology.',
     technicalDetails: [
       'Mechanism: Screw conveyor / Pump',
       'Automation: Load cells control weight',
@@ -37,6 +41,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Primary Digester',
     shortDescription: 'The heart of the plant where fermentation occurs.',
     fullDescription: 'This large, airtight tank is heated (usually to 38-42°C for mesophilic digestion). In the absence of oxygen, anaerobic bacteria break down the organic matter. This biological process releases biogas (methane and CO2).',
+    expandedContent: 'Inside the primary digester, a complex four-stage biological process takes place: Hydrolysis (breaking down complex polymers), Acidogenesis (fermenting into volatile fatty acids), Acetogenesis (converting to acetic acid), and finally Methanogenesis (archaea producing methane). The tank is insulated and heated, typically using hot water coils circulated from the CHP unit. Agitators (mixers) run periodically to prevent the formation of a floating crust and to keep solids in suspension, ensuring the bacteria have constant access to nutrients.',
     technicalDetails: [
       'Temperature: 38°C - 42°C (Mesophilic)',
       'Retention Time: 30-60 days',
@@ -49,6 +54,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Biogas Storage',
     shortDescription: 'Flexible double-membrane dome for gas storage.',
     fullDescription: 'Biogas produced in the digester bubbles up and is captured in the flexible roof (double membrane gas holder). It acts as a buffer to ensure a constant supply of gas to the engine, even if production fluctuates slightly.',
+    expandedContent: 'The double-membrane gas holder consists of an inner membrane that contains the gas and an outer weather-protection membrane. An air blower maintains pressure in the space between the two membranes to keep the dome rigid against wind and snow loads. The gas storage acts as a buffer, typically holding 4-12 hours of gas production. This allows the CHP engine to run at a constant output even if gas production from the biology fluctuates slightly over short periods. Pressure relief valves prevent over-pressurization.',
     technicalDetails: [
       'Composition: ~55% CH4, ~45% CO2',
       'Pressure: ~5-15 mbar',
@@ -61,6 +67,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'CHP Unit',
     shortDescription: 'Combined Heat and Power generator.',
     fullDescription: 'The biogas is scrubbed (dried and cleaned) and fed into a combustion engine. This engine drives a generator to produce electricity. The heat from the engine is captured and used to heat the digester, with excess available for local heating networks.',
+    expandedContent: 'The Combined Heat and Power (CHP) unit is a modified internal combustion engine designed to run on biogas. Before combustion, the gas is often dehumidified and passed through activated carbon filters to remove hydrogen sulfide (H2S) and siloxanes, which can damage the engine. The engine drives a generator synchronized to the national grid frequency. Thermal energy is recovered from the engine jacket water and exhaust gases via heat exchangers, achieving total plant efficiencies of over 85%.',
     technicalDetails: [
       'Efficiency: ~40% Electric, ~45% Thermal',
       'Output: Electricity to Grid',
@@ -73,6 +80,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Separator',
     shortDescription: 'Separates remaining material into solid and liquid.',
     fullDescription: 'After digestion, the leftover material (digestate) is pumped to a separator. It mechanically separates the solid fibers from the liquid nutrient-rich fertilizer.',
+    expandedContent: 'Separation is crucial for nutrient management. The screw press applies mechanical pressure to the digestate against a screen. The solid fraction, rich in phosphorus and organic matter, is stackable and can be transported easily. The liquid fraction contains most of the nitrogen (ammonium) and potassium. This separation allows farmers to apply specific nutrients where needed—using the liquid for rapid crop uptake during growing season and the solids for soil structure improvement in the autumn.',
     technicalDetails: [
       'Type: Screw press',
       'Solids: Used as bedding or soil conditioner',
@@ -85,6 +93,7 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     title: 'Digestate Storage',
     shortDescription: 'Storage for bio-fertilizer.',
     fullDescription: 'The liquid digestate is stored in large lagoons or tanks until the spreading season. It is a valuable, low-odor fertilizer that replaces fossil-fuel derived chemical fertilizers.',
+    expandedContent: 'Digestate storage capacity is dictated by legal spreading windows (e.g., restrictions during winter months in Nitrate Vulnerable Zones). Lagoons are often covered with floating covers or tensioned roofs to prevent rainwater ingress (which dilutes the fertilizer) and to minimize ammonia emissions. The final product is a sanitized, pH-neutral bio-fertilizer that has a lower biological oxygen demand (BOD) than raw slurry, making it safer for watercourses if applied correctly.',
     technicalDetails: [
       'Capacity: 6 months storage typically required',
       'Application: Dribble bar / Trailing shoe',
