@@ -1,10 +1,19 @@
 
+
 export interface PlantPart {
   id: string;
   title: string;
   shortDescription: string;
   fullDescription: string;
-  expandedContent: string;
+  
+  // Educational Content Fields
+  whatItDoes: string; // Detailed process description
+  equipmentTypes: string[];
+  performance: string[];
+  commonIssues: string[];
+  optimisation: string[];
+  regulations: string[];
+
   technicalDetails: string[];
   color: string;
 }
@@ -14,8 +23,38 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'feedstock',
     title: 'Feedstock Reception',
     shortDescription: 'Where organic waste enters the system.',
-    fullDescription: 'The process begins here. Organic materials such as agricultural waste, manure, energy crops (like maize), or food waste are collected and stored. They are pre-treated to remove contaminants and macerated to increase surface area for bacteria.',
-    expandedContent: 'The reception area is the critical control point (CCP) for the plant. Incoming vehicles are weighed on a weighbridge to track tonnage. Loads are visually inspected and often tested for dry matter content. Strict biosecurity measures are in place to prevent the spread of disease, especially when handling animal by-products (ABP). Liquid feedstocks are discharged via sealed couplings into underground reception tanks, while solids are tipped into bays. Odor control systems, such as carbon filters or air extraction, are often installed here to minimize environmental impact.',
+    fullDescription: 'The process begins here. Organic materials such as agricultural waste, manure, energy crops, or food waste are collected, inspected, and pre-treated.',
+    whatItDoes: 'The reception area acts as the gateway to the plant. Its primary role is to accept raw materials, verify their quality/weight, and prepare them for digestion. This often involves maceration (chopping) to increase surface area and removing contaminants like stones or plastic which could damage pumps.',
+    equipmentTypes: [
+      'Weighbridge for tonnage tracking',
+      'Silage Clamps (concrete bunkers)',
+      'Reception Tanks (underground)',
+      'Macerators / Hammer Mills',
+      'De-packaging units (for food waste)',
+      'Stone Traps'
+    ],
+    performance: [
+      'Particle size < 12mm is ideal for bacterial access',
+      'Freshness of feedstock affects gas potential',
+      'Homogeneity of mix prevents shock loading'
+    ],
+    commonIssues: [
+      'Contamination (plastic/metals) causing blockages',
+      'Odor complaints from reception building',
+      'Leachate runoff from silage clamps',
+      'Grit accumulation in tanks'
+    ],
+    optimisation: [
+      'Minimize storage time to prevent pre-fermentation losses',
+      'Blend feedstocks for optimal C:N ratio (25:1)',
+      'Use air extraction with carbon filters for odor control'
+    ],
+    regulations: [
+      'Animal By-Products (ABP) regulations (Clean/Dirty zones)',
+      'Odor Management Plan compliance',
+      'Duty of Care waste transfer notes',
+      'Planning conditions regarding vehicle movements'
+    ],
     technicalDetails: [
       'Input types: Slurry, Maize, Food Waste',
       'Pre-treatment: Maceration/Chopping',
@@ -27,8 +66,36 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'feeder',
     title: 'Feeding System',
     shortDescription: 'Automated transfer of inputs to the digester.',
-    fullDescription: 'Solid feedstock is loaded into a hopper which feeds the digester at a steady, controlled rate. Liquid feedstocks are pumped. A consistent feed rate is crucial for maintaining stable biological conditions inside the tank.',
-    expandedContent: 'The feeding module serves as the interface between raw storage and the biological process. It typically consists of a large hopper with moving floor slats or walking floors that push material towards mixing screws. These screws macerate the feedstock, chopping it into smaller particles to increase the surface area available for enzymatic attack by bacteria. The system is automated to feed small amounts frequently (e.g., every hour) rather than large slug loads, preventing shock loading which could destabilize the digester biology.',
+    fullDescription: 'Solid feedstock is loaded into a hopper which feeds the digester at a steady, controlled rate via screw conveyors or pumps.',
+    whatItDoes: 'The feeding module serves as the interface between raw storage and the biological process. It doses specific amounts of material into the digester at set intervals. This consistency is crucial—"little and often"—to maintain a stable environment for the bacteria without causing acid spikes.',
+    equipmentTypes: [
+      'Solids Hopper with walking floor',
+      'Vertical/Horizontal Screw Augers',
+      'Macerating Pumps',
+      'Liquid feed pumps (rotary lobe)',
+      'Load cells (weighing sensors)'
+    ],
+    performance: [
+      'Dosing accuracy (+/- 1%)',
+      'Energy consumption per tonne fed',
+      'Reliability / Uptime'
+    ],
+    commonIssues: [
+      'Bridging (material getting stuck in hopper)',
+      'Foreign object damage to screws',
+      'Wear on auger flights reducing efficiency',
+      'Blockages in pipework'
+    ],
+    optimisation: [
+      'Feed every 30-60 mins rather than once a day',
+      'Automated integration with gas production levels',
+      'Regular wear part replacement schedule'
+    ],
+    regulations: [
+      'Machinery Directive (PUWER) - Guarding',
+      'Confined space regulations (during maintenance)',
+      'ATEX rating if near gas zones'
+    ],
     technicalDetails: [
       'Mechanism: Screw conveyor / Pump',
       'Automation: Load cells control weight',
@@ -40,8 +107,38 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'digester',
     title: 'Primary Digester',
     shortDescription: 'The heart of the plant where fermentation occurs.',
-    fullDescription: 'This large, airtight tank is heated (usually to 38-42°C for mesophilic digestion). In the absence of oxygen, anaerobic bacteria break down the organic matter. This biological process releases biogas (methane and CO2).',
-    expandedContent: 'Inside the primary digester, a complex four-stage biological process takes place: Hydrolysis (breaking down complex polymers), Acidogenesis (fermenting into volatile fatty acids), Acetogenesis (converting to acetic acid), and finally Methanogenesis (archaea producing methane). The tank is insulated and heated, typically using hot water coils circulated from the CHP unit. Agitators (mixers) run periodically to prevent the formation of a floating crust and to keep solids in suspension, ensuring the bacteria have constant access to nutrients.',
+    fullDescription: 'This large, airtight, heated tank is where anaerobic bacteria break down organic matter to release biogas (methane and CO2).',
+    whatItDoes: 'Inside the digester, a four-stage biological process occurs: Hydrolysis, Acidogenesis, Acetogenesis, and Methanogenesis. Complex organic polymers are broken down into simple sugars, then acids, and finally methane. The tank must be heated (typically 38-42°C) and mixed to ensure bacteria encounter food and to prevent crust formation.',
+    equipmentTypes: [
+      'CSTR (Continuous Stirred-Tank Reactor)',
+      'Glass-fused-to-steel or Concrete tanks',
+      'Submersible / Paddle Mixers',
+      'Heating coils (internal) or Heat exchangers (external)',
+      'Temperature & Level sensors'
+    ],
+    performance: [
+      'Biogas Yield (m³/tonne VS)',
+      'Retention Time (30-60 days typically)',
+      'Organic Loading Rate (kg VS/m³/day)',
+      'FOS/TAC Ratio (Indicator of stability)'
+    ],
+    commonIssues: [
+      'Acidosis (pH drop killing methanogens)',
+      'Foaming (caused by proteins or instability)',
+      'Grit/Sand build-up reducing volume',
+      'Mixer failure leading to crusting'
+    ],
+    optimisation: [
+      'Keep temperature stable (+/- 0.5°C)',
+      'Trace element dosing (Cobalt, Nickel, Selenium)',
+      'Optimize mixing cycles to save energy',
+      'Recirculate digestate to seed new material'
+    ],
+    regulations: [
+      'DSEAR (Explosive Atmospheres)',
+      'Pressure Systems Safety Regulations (PSSR)',
+      'Environmental Permit conditions'
+    ],
     technicalDetails: [
       'Temperature: 38°C - 42°C (Mesophilic)',
       'Retention Time: 30-60 days',
@@ -53,8 +150,36 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'gas-holder',
     title: 'Biogas Storage',
     shortDescription: 'Flexible double-membrane dome for gas storage.',
-    fullDescription: 'Biogas produced in the digester bubbles up and is captured in the flexible roof (double membrane gas holder). It acts as a buffer to ensure a constant supply of gas to the engine, even if production fluctuates slightly.',
-    expandedContent: 'The double-membrane gas holder consists of an inner membrane that contains the gas and an outer weather-protection membrane. An air blower maintains pressure in the space between the two membranes to keep the dome rigid against wind and snow loads. The gas storage acts as a buffer, typically holding 4-12 hours of gas production. This allows the CHP engine to run at a constant output even if gas production from the biology fluctuates slightly over short periods. Pressure relief valves prevent over-pressurization.',
+    fullDescription: 'Captures and stores the produced biogas, acting as a buffer to ensure a constant supply to the CHP engine.',
+    whatItDoes: 'The gas holder typically sits on top of the digester (though can be separate). It consists of an inner gas bag and an outer weather protection membrane. An air blower maintains pressure between them to hold the shape against wind/snow. It buffers short-term fluctuations in gas production.',
+    equipmentTypes: [
+      'Double-membrane roof',
+      'Steel gas storage tanks',
+      'External gas bags',
+      'Pressure Relief Valves (PRV)',
+      'Gas flare (emergency burn-off)'
+    ],
+    performance: [
+      'Storage capacity (hours of engine run-time)',
+      'Leak tightness',
+      'Pressure handling (typically 5-15 mbar)'
+    ],
+    commonIssues: [
+      'UV degradation of membranes',
+      'Over-pressure venting (loss of revenue)',
+      'Condensate blocking gas lines',
+      'Air ingress (creating explosive mixture)'
+    ],
+    optimisation: [
+      'Active pressure control to minimize flaring',
+      'Regular leak detection surveys (methane is a potent GHG)',
+      'Desulphurization (adding air/iron sponge)'
+    ],
+    regulations: [
+      'DSEAR Zoning (Zone 0/1/2)',
+      'Lightning protection requirements',
+      'Flare operation logging (Environmental Agency)'
+    ],
     technicalDetails: [
       'Composition: ~55% CH4, ~45% CO2',
       'Pressure: ~5-15 mbar',
@@ -66,8 +191,36 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'chp',
     title: 'CHP Unit',
     shortDescription: 'Combined Heat and Power generator.',
-    fullDescription: 'The biogas is scrubbed (dried and cleaned) and fed into a combustion engine. This engine drives a generator to produce electricity. The heat from the engine is captured and used to heat the digester, with excess available for local heating networks.',
-    expandedContent: 'The Combined Heat and Power (CHP) unit is a modified internal combustion engine designed to run on biogas. Before combustion, the gas is often dehumidified and passed through activated carbon filters to remove hydrogen sulfide (H2S) and siloxanes, which can damage the engine. The engine drives a generator synchronized to the national grid frequency. Thermal energy is recovered from the engine jacket water and exhaust gases via heat exchangers, achieving total plant efficiencies of over 85%.',
+    fullDescription: 'Converts cleaned biogas into electricity for the grid and heat for the plant processes.',
+    whatItDoes: 'The CHP is a modified internal combustion engine connected to a generator. It burns methane to produce electricity. The "Combined Heat" part refers to capturing thermal energy from the engine jacket and exhaust to heat water. This hot water heats the digesters, making the plant self-sufficient.',
+    equipmentTypes: [
+      'Reciprocating Gas Engines (Jenbacher, MAN)',
+      'Gas Turbines (larger scale)',
+      'Active Carbon Filters (gas cleaning)',
+      'Gas dehumidifiers / Chillers'
+    ],
+    performance: [
+      'Electrical Efficiency (~38-42%)',
+      'Total Efficiency (>85% with heat use)',
+      'Availability (>8000 hours/year target)'
+    ],
+    commonIssues: [
+      'H2S damage (acid corrosion) to internals',
+      'Siloxanes (from soaps) forming glass on pistons',
+      'Spark plug wear',
+      'Grid connection trips (G99 faults)'
+    ],
+    optimisation: [
+      'Gas scrubbing to remove H2S and moisture',
+      'Oil analysis to predict engine health',
+      'Participating in grid balancing services',
+      'Exporting excess heat to neighbors'
+    ],
+    regulations: [
+      'Medium Combustion Plant Directive (MCPD) - NOx/SOx limits',
+      'Grid Code Compliance (G99)',
+      'Noise pollution regulations'
+    ],
     technicalDetails: [
       'Efficiency: ~40% Electric, ~45% Thermal',
       'Output: Electricity to Grid',
@@ -79,8 +232,35 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'separator',
     title: 'Separator',
     shortDescription: 'Separates remaining material into solid and liquid.',
-    fullDescription: 'After digestion, the leftover material (digestate) is pumped to a separator. It mechanically separates the solid fibers from the liquid nutrient-rich fertilizer.',
-    expandedContent: 'Separation is crucial for nutrient management. The screw press applies mechanical pressure to the digestate against a screen. The solid fraction, rich in phosphorus and organic matter, is stackable and can be transported easily. The liquid fraction contains most of the nitrogen (ammonium) and potassium. This separation allows farmers to apply specific nutrients where needed—using the liquid for rapid crop uptake during growing season and the solids for soil structure improvement in the autumn.',
+    fullDescription: 'Mechanically separates digestate into solid fibers (soil conditioner) and liquid liquor (bio-fertilizer).',
+    whatItDoes: 'After digestion is complete, the material is pumped here. The separator squeezes the liquid out of the solids. The solid fraction is rich in organic matter and phosphorus (P), making it stackable and easy to transport. The liquid contains most of the nitrogen (N) and potassium (K).',
+    equipmentTypes: [
+      'Screw Press (most common)',
+      'Decanter Centrifuge',
+      'Belt Press',
+      'Vibrating Screen'
+    ],
+    performance: [
+      'Dry Solids % of cake (target >25%)',
+      'Capture rate of P (in solids) vs N (in liquid)',
+      'Throughput (m³/hour)'
+    ],
+    commonIssues: [
+      'Screen blinding (clogging)',
+      'Wear on screw flights from grit',
+      'Overflow due to blockage',
+      'Poor separation due to thin digestate'
+    ],
+    optimisation: [
+      'Adjusting back-pressure weights/springs',
+      'Using polymers to flocculate (if permitted)',
+      'Regular cleaning of screens'
+    ],
+    regulations: [
+      'End of Waste criteria (if selling solids)',
+      'Pollution prevention (bunding required)',
+      'Bio-aerosol monitoring if near housing'
+    ],
     technicalDetails: [
       'Type: Screw press',
       'Solids: Used as bedding or soil conditioner',
@@ -92,8 +272,35 @@ export const PLANT_DATA: Record<string, PlantPart> = {
     id: 'storage',
     title: 'Digestate Storage',
     shortDescription: 'Storage for bio-fertilizer.',
-    fullDescription: 'The liquid digestate is stored in large lagoons or tanks until the spreading season. It is a valuable, low-odor fertilizer that replaces fossil-fuel derived chemical fertilizers.',
-    expandedContent: 'Digestate storage capacity is dictated by legal spreading windows (e.g., restrictions during winter months in Nitrate Vulnerable Zones). Lagoons are often covered with floating covers or tensioned roofs to prevent rainwater ingress (which dilutes the fertilizer) and to minimize ammonia emissions. The final product is a sanitized, pH-neutral bio-fertilizer that has a lower biological oxygen demand (BOD) than raw slurry, making it safer for watercourses if applied correctly.',
+    fullDescription: 'Large lagoons or tanks that hold the liquid bio-fertilizer until it can be spread on land.',
+    whatItDoes: 'Storage acts as a buffer between continuous production and seasonal demand for fertilizer. Farmers cannot spread in winter (run-off risk) or just before harvest. Thus, plants typically need 6 months of storage capacity. The digestate continues to mature here, stabilizing further.',
+    equipmentTypes: [
+      'Earth-banked Lagoons (lined)',
+      'Concrete Circular Tanks',
+      'Flexible Bladder Tanks',
+      'Floating Covers / Tensioned Roofs'
+    ],
+    performance: [
+      'Total capacity vs required spreading window',
+      'Mixing ability (to prevent sedimentation)',
+      'Ammonia retention'
+    ],
+    commonIssues: [
+      'Crust formation (too thick to mix)',
+      'Sediment build-up reducing capacity',
+      'Rainwater dilution (if uncovered)',
+      'Ammonia emissions (odor/nutrient loss)'
+    ],
+    optimisation: [
+      'Covering stores (reduces rain ingress & ammonia loss)',
+      'Separating rainwater from yard run-off',
+      'Using dribble bars for spreading to reduce odor'
+    ],
+    regulations: [
+      'SSAFO Regulations (Silage, Slurry and Agricultural Fuel Oil)',
+      'NVZ (Nitrate Vulnerable Zones) closed periods',
+      'Farming Rules for Water'
+    ],
     technicalDetails: [
       'Capacity: 6 months storage typically required',
       'Application: Dribble bar / Trailing shoe',
@@ -117,11 +324,23 @@ export interface Feedstock {
   id: string;
   name: string;
   description: string;
-  yieldFactor: number;
+  yieldFactor: number; // Multiplier for visual output calc
   methaneContent: string;
   color: string; // Hex for SVG visualization
   themeClass: string; // Keep for reference
   styles: FeedstockStyles; // Explicit classes for Tailwind
+  
+  // Educational Metrics
+  expectedGasYield: string; // e.g. "180 m³/t"
+  contaminationRisk: string; // e.g. "Low"
+  requiredPreTreatment: string; // e.g. "Maceration"
+  digestateCharacteristics: string; // e.g. "High Nitrogen"
+  revenueRoutes: string; // e.g. "Gate Fees"
+  
+  // KPI Simulation Data
+  retentionTime: string; // e.g. "45 days"
+  feedRate: string; // e.g. "40 t/d"
+  
   impacts: Record<string, string>;
 }
 
@@ -129,33 +348,71 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
   'manure': {
     id: 'manure',
     name: 'Cow Manure',
-    description: 'Farm slurry & manure',
+    description: 'Farm yard manure with straw.',
     yieldFactor: 0.8,
     methaneContent: '55%',
-    color: '#5D4037', // Dark Brown
+    color: '#78350f', // Brown
     themeClass: 'amber',
     styles: {
-      dotColor: 'bg-amber-500',
+      dotColor: 'bg-amber-700',
       iconBg: 'bg-amber-100',
-      iconText: 'text-amber-600',
+      iconText: 'text-amber-700',
       alertBg: 'bg-amber-50',
-      alertBorder: 'border-amber-500',
-      alertTitle: 'text-amber-800',
-      alertText: 'text-amber-900'
+      alertBorder: 'border-amber-700',
+      alertTitle: 'text-amber-900',
+      alertText: 'text-amber-800'
     },
+    expectedGasYield: '25 - 40 m³/tonne',
+    contaminationRisk: 'Low (Stones)',
+    requiredPreTreatment: 'Maceration',
+    digestateCharacteristics: 'High fiber, Standard NPK',
+    revenueRoutes: 'Cost savings (Fertilizer)',
+    retentionTime: '40 days',
+    feedRate: '45 t/d',
     impacts: {
-      'feedstock': 'Pumped as liquid slurry or loaded as solid muck. Requires less maceration than crops.',
-      'digester': 'Provides excellent buffering bacteria stability, though gas yield per volume is lower.',
-      'separator': 'Produces fiber suitable for cattle bedding.',
-      'storage': 'Digestate has reduced odor compared to raw manure and nutrients are more plant-available.'
+      'feedstock': 'Solid manure requires a robust hopper and macerators to chop straw bedding.',
+      'digester': 'Provides excellent buffering capacity and bacterial stability, though gas yield per volume is low.',
+      'separator': 'Produces excellent fiber suitable for re-use as cattle bedding.',
+      'storage': 'Digestate has significantly reduced odor compared to raw manure.'
+    }
+  },
+  'slurry': {
+    id: 'slurry',
+    name: 'Cattle Slurry',
+    description: 'Liquid farm waste.',
+    yieldFactor: 0.5,
+    methaneContent: '52%',
+    color: '#57534e', // Stone/Dark Grey
+    themeClass: 'stone',
+    styles: {
+      dotColor: 'bg-stone-600',
+      iconBg: 'bg-stone-100',
+      iconText: 'text-stone-700',
+      alertBg: 'bg-stone-50',
+      alertBorder: 'border-stone-500',
+      alertTitle: 'text-stone-800',
+      alertText: 'text-stone-700'
+    },
+    expectedGasYield: '15 - 25 m³/tonne',
+    contaminationRisk: 'Low',
+    requiredPreTreatment: 'Screening (Stones)',
+    digestateCharacteristics: 'Low Dry Solids, Liquid Fertilizer',
+    revenueRoutes: 'Cost savings',
+    retentionTime: '25 days',
+    feedRate: '60 t/d',
+    impacts: {
+      'feedstock': 'Pumped directly into reception tanks. Easiest material to handle but high volume.',
+      'feeder': 'Uses rotary lobe pumps rather than screw conveyors.',
+      'digester': 'High water content means large tank volumes are needed for sufficient retention time.',
+      'storage': 'Requires large liquid storage capacity due to high volumes processed.'
     }
   },
   'crops': {
     id: 'crops',
-    name: 'Energy Crops',
-    description: 'Maize & Grass Silage',
+    name: 'Maize Silage',
+    description: 'High energy crop.',
     yieldFactor: 1.6,
-    methaneContent: '52%',
+    methaneContent: '53%',
     color: '#a3e635', // Bright Green
     themeClass: 'lime',
     styles: {
@@ -167,20 +424,27 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertTitle: 'text-lime-800',
       alertText: 'text-lime-900'
     },
+    expectedGasYield: '200 - 220 m³/tonne',
+    contaminationRisk: 'Very Low',
+    requiredPreTreatment: 'Precision Chopping',
+    digestateCharacteristics: 'Balanced Nutrient Profile',
+    revenueRoutes: 'Energy Sales (Crop is a cost)',
+    retentionTime: '55 days',
+    feedRate: '28 t/d',
     impacts: {
-      'feedstock': 'Stored in silage clamps. Requires intensive maceration to break down fibers.',
-      'digester': 'High gas yield requires careful monitoring of pH to prevent acidosis.',
-      'separator': 'Fibrous digestate makes excellent soil conditioner.',
-      'storage': 'High nutrient value requires precise spreading planning.'
+      'feedstock': 'Stored in clamps. Must be kept airtight to prevent aerobic spoilage before digestion.',
+      'digester': 'High energy density. Can cause acidification if fed too fast. Requires robust mixing.',
+      'separator': 'Produces bulky fibrous solid fraction.',
+      'chp': 'High gas yield generates maximum revenue per tonne processed.'
     }
   },
   'food_waste': {
     id: 'food_waste',
     name: 'Food Waste',
-    description: 'Commercial food scraps',
-    yieldFactor: 1.4,
+    description: 'Commercial/Household scraps.',
+    yieldFactor: 1.5,
     methaneContent: '58%',
-    color: '#d97706', // Orange/Brown mix
+    color: '#f97316', // Orange
     themeClass: 'orange',
     styles: {
       dotColor: 'bg-orange-500',
@@ -188,14 +452,122 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       iconText: 'text-orange-600',
       alertBg: 'bg-orange-50',
       alertBorder: 'border-orange-500',
-      alertTitle: 'text-orange-800',
-      alertText: 'text-orange-900'
+      alertTitle: 'text-orange-900',
+      alertText: 'text-orange-800'
     },
+    expectedGasYield: '160 - 180 m³/tonne',
+    contaminationRisk: 'High (Plastics/Metals)',
+    requiredPreTreatment: 'De-packaging & Pasteurization',
+    digestateCharacteristics: 'High Nitrogen, Regulated',
+    revenueRoutes: 'Gate Fees + Energy',
+    retentionTime: '35 days',
+    feedRate: '32 t/d',
     impacts: {
-      'feedstock': 'Requires de-packaging and a pasteurization step (70°C for 1hr) to kill pathogens.',
-      'digester': 'Rapid degradation rates. Can be volatile; requires consistent feeding.',
-      'gas-holder': 'High methane content boosts energy value.',
-      'storage': 'Stringent regulations on spreading due to animal by-product rules.'
+      'feedstock': 'Requires intense pre-treatment: removal of packaging and heating to 70°C for 1 hour (Pasteurization).',
+      'digester': 'Very rapid breakdown. Can be volatile. Needs careful monitoring of FOS/TAC ratio.',
+      'gas-holder': 'Produces high quality gas with good methane content.',
+      'storage': 'Strict veterinary controls on where digestate can be spread (no grazing land).'
     }
+  },
+  'brewery': {
+    id: 'brewery',
+    name: 'Brewery Grain',
+    description: 'Spent malt/hops.',
+    yieldFactor: 1.2,
+    methaneContent: '56%',
+    color: '#d97706', // Amber/Gold
+    themeClass: 'amber',
+    styles: {
+      dotColor: 'bg-amber-500',
+      iconBg: 'bg-amber-100',
+      iconText: 'text-amber-700',
+      alertBg: 'bg-amber-50',
+      alertBorder: 'border-amber-500',
+      alertTitle: 'text-amber-900',
+      alertText: 'text-amber-800'
+    },
+    expectedGasYield: '110 - 130 m³/tonne',
+    contaminationRisk: 'Low',
+    requiredPreTreatment: 'Mixing/Dilution',
+    digestateCharacteristics: 'High Protein/Nitrogen',
+    revenueRoutes: 'Gate Fee / Low Cost Feedstock',
+    retentionTime: '30 days',
+    feedRate: '38 t/d',
+    impacts: {
+      'feedstock': 'Often arrives warm. Prone to very rapid spoilage if not fed immediately.',
+      'digester': 'Excellent gas producer but high protein content can lead to ammonia inhibition if not balanced.',
+      'chp': 'Consistent gas production curve ideal for baseload power.',
+      'storage': 'Resulting digestate is potent fertilizer.'
+    }
+  },
+  'commercial': {
+    id: 'commercial',
+    name: 'Mixed Commercial',
+    description: 'Restaurant/Supermarket waste.',
+    yieldFactor: 1.4,
+    methaneContent: '57%',
+    color: '#a8a29e', // Grey
+    themeClass: 'stone',
+    styles: {
+      dotColor: 'bg-stone-400',
+      iconBg: 'bg-stone-100',
+      iconText: 'text-stone-600',
+      alertBg: 'bg-stone-100',
+      alertBorder: 'border-stone-400',
+      alertTitle: 'text-stone-800',
+      alertText: 'text-stone-700'
+    },
+    expectedGasYield: '140 - 180 m³/tonne',
+    contaminationRisk: 'Very High',
+    requiredPreTreatment: 'Separation/Hammer Mill',
+    digestateCharacteristics: 'Variable Quality',
+    revenueRoutes: 'High Gate Fees',
+    retentionTime: '40 days',
+    feedRate: '35 t/d',
+    impacts: {
+      'feedstock': 'Critical Control Point: Removing contaminants (forks, plastic) is essential to protect machinery.',
+      'feeder': 'Requires robust macerating pumps to handle diverse particle sizes.',
+      'digester': 'Variable input quality requires sophisticated biological monitoring.',
+      'separator': 'High probability of rejecting plastics in the separation phase.'
+    }
+  }
+};
+
+export const METRIC_EXPLANATIONS: Record<string, { title: string; description: string; whyItMatters: string; optimalRange: string }> = {
+  gas: {
+    title: "Biogas Production Rate",
+    description: "The volume of raw biogas generated by the bacteria every hour.",
+    whyItMatters: "Directly correlates to revenue. Consistent production indicates a stable biological process. Sudden drops often signal biological upset like Acidosis.",
+    optimalRange: "Dependent on plant size (400-600 m³/h typical for 1MW)"
+  },
+  power: {
+    title: "Electrical Power Output",
+    description: "Real-time electricity generation fed into the national grid.",
+    whyItMatters: "The main revenue stream. Engines run most efficiently at full load (100%). Running at partial load increases wear and reduces efficiency.",
+    optimalRange: "95% - 100% of rated capacity"
+  },
+  thermal: {
+    title: "Thermal Heat Output",
+    description: "Heat energy captured from the engine's exhaust and cooling jacket.",
+    whyItMatters: "Critical for keeping the digester warm (38-42°C). Excess heat can be used to dry woodchip, heat nearby houses, or pasteurize food waste.",
+    optimalRange: "1.1x to 1.5x of Electrical Output"
+  },
+  methane: {
+    title: "Methane (CH₄) Concentration",
+    description: "The percentage of the gas volume that is combustible methane.",
+    whyItMatters: "Quality over quantity. Engines need >50% CH₄ to run. Higher values mean more energy per m³ of gas. Low methane often means the bacteria are 'starving'.",
+    optimalRange: "52% - 58%"
+  },
+  retention: {
+    title: "Hydraulic Retention Time (HRT)",
+    description: "The average time feed material spends inside the digester tank.",
+    whyItMatters: "Bacteria need time to eat. If HRT is too short, material leaves undigested (gas loss). If too long, tank volume is being wasted.",
+    optimalRange: "30 - 60 Days (depending on feedstock)"
+  },
+  feedRate: {
+    title: "Daily Feed Rate",
+    description: "The tonnage of fresh material added to the system every 24 hours.",
+    whyItMatters: "Stability is key. 'Little and often' feeding prevents acid spikes. Overfeeding causes 'indigestion' (acidosis); underfeeding causes starvation.",
+    optimalRange: "Consistent with biological capacity"
   }
 };
