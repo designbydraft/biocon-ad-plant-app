@@ -17,12 +17,16 @@ interface DigestateExplorerProps {
   isHighNFeedstock: boolean;
 }
 
-const Tooltip = ({ text }: { text: string }) => (
-  <div className="group relative inline-block ml-1">
+const Tooltip = ({ text, align = 'center' }: { text: string, align?: 'left' | 'center' }) => (
+  <div className="group relative inline-block ml-1 align-middle">
     <HelpCircle size={14} className="text-slate-400 cursor-help hover:text-brand transition-colors" />
-    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 bg-slate-800 text-white text-xs p-2.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 leading-relaxed">
+    <div className={`absolute bottom-full mb-2 w-56 bg-slate-800 text-white text-xs p-2.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 leading-relaxed
+      ${align === 'left' ? 'left-0' : 'left-1/2 -translate-x-1/2'}
+    `}>
       {text}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-800"></div>
+      <div className={`absolute top-full -mt-1 border-4 border-transparent border-t-slate-800
+        ${align === 'left' ? 'left-4' : 'left-1/2 -translate-x-1/2'}
+      `}></div>
     </div>
   </div>
 );
@@ -182,15 +186,15 @@ const DigestateExplorer: React.FC<DigestateExplorerProps> = ({
 
                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
                   <label className="block text-sm font-bold text-slate-700 mb-2">Check your available land:</label>
-                  <div className="flex gap-3">
+                  <div className="flex flex-col sm:flex-row gap-3">
                     <input 
                       type="number" 
                       placeholder="Enter Hectares" 
                       value={userLand}
                       onChange={(e) => setUserLand(e.target.value)}
-                      className="flex-1 p-2 rounded border border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
+                      className="w-full sm:flex-1 p-2 rounded border border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition-all"
                     />
-                    <div className={`px-4 py-2 rounded font-bold text-sm flex items-center justify-center min-w-[100px] transition-colors ${
+                    <div className={`px-4 py-2 rounded font-bold text-sm flex items-center justify-center transition-colors min-h-[40px] ${
                       landStatus === 'sufficient' ? 'bg-emerald-100 text-emerald-700' :
                       landStatus === 'insufficient' ? 'bg-red-100 text-red-700' :
                       'bg-slate-200 text-slate-400'
@@ -232,7 +236,7 @@ const DigestateExplorer: React.FC<DigestateExplorerProps> = ({
                     <li className="text-sm text-slate-600 flex gap-2">
                        <div className="w-1.5 h-1.5 bg-brand rounded-full mt-1.5 shrink-0" />
                        <span>
-                         <strong>PAS 110:</strong> <Tooltip text={DIGESTATE_TOOLTIPS.pas110} />
+                         <strong>PAS 110:</strong> <Tooltip text={DIGESTATE_TOOLTIPS.pas110} align="left" />
                          Certified digestate is a 'product', not 'waste'.
                        </span>
                     </li>

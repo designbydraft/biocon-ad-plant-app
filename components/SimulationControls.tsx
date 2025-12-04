@@ -21,7 +21,6 @@ interface SimulationControlsProps {
   isRetentionLocked: boolean;
   setIsRetentionLocked: (val: boolean) => void;
   
-  // Replaced individual feedstock props with mix array
   activeMix: FeedstockMixItem[];
   onMixChange: (mix: FeedstockMixItem[]) => void;
 

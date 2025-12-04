@@ -111,12 +111,32 @@ const App: React.FC = () => {
   // Simulation State
   const [feedRate, setFeedRate] = useState(SIMULATION_DEFAULTS.feedRate);
   const [dryMatter, setDryMatter] = useState(SIMULATION_DEFAULTS.dryMatter);
+  const [isDryMatterManuallySet, setIsDryMatterManuallySet] = useState(false);
   const [temperature, setTemperature] = useState<'meso' | 'thermo'>(SIMULATION_DEFAULTS.temperature);
   const [retentionTime, setRetentionTime] = useState(SIMULATION_DEFAULTS.feedRate > 0 ? SIMULATION_CONSTANTS.DIGESTER_VOLUME / SIMULATION_DEFAULTS.feedRate : 40);
   const [isRetentionLocked, setIsRetentionLocked] = useState(SIMULATION_DEFAULTS.retentionLocked);
-  
-  // NEW: Active Mix Array State instead of individual A/B
   const [activeMix, setActiveMix] = useState(SIMULATION_DEFAULTS.activeMix);
+
+  // Auto-Update Dry Matter when mix changes (unless manually overridden)
+  useEffect(() => {
+    if (!isDryMatterManuallySet) {
+      let mixedDM = 0;
+      activeMix.forEach(item => {
+        const fs = FEEDSTOCKS[item.id];
+        if (fs) {
+          const midPoint = (fs.dmMin + fs.dmMax) / 2;
+          mixedDM += midPoint * (item.percentage / 100);
+        }
+      });
+      // Round to nearest 0.5
+      setDryMatter(Math.round(mixedDM * 2) / 2);
+    }
+  }, [activeMix, isDryMatterManuallySet]);
+
+  const handleDryMatterChange = (val: number) => {
+    setDryMatter(val);
+    setIsDryMatterManuallySet(true);
+  };
 
   // Effect: Recalculate Retention Time if not locked
   useEffect(() => {
@@ -143,13 +163,11 @@ const App: React.FC = () => {
       mixedYield10DM += fs.biogasYield10DM * fraction;
       mixedMethaneBase += fs.methaneBasePercent * fraction;
 
-      // Track dominant for visuals
       if (item.percentage > maxPct) {
         maxPct = item.percentage;
         dominantFeedstockId = item.id;
       }
       
-      // Check N levels
       if (fs.nitrogenPotential === 'High' || fs.nitrogenPotential === 'Very High') {
         hasHighN = true;
         if (item.percentage > 30) highNRisk = true;
@@ -173,31 +191,27 @@ const App: React.FC = () => {
     // 3. Methane Calculation
     const tempBonus = temperature === 'thermo' ? 1 : 0;
     
-    // Overload Penalties
     let retentionPenalty = 0;
     if (retentionTime < 30) retentionPenalty += 2;
     if (retentionTime < 20) retentionPenalty += 3;
 
     let finalMethane = mixedMethaneBase + tempBonus - retentionPenalty;
-    finalMethane = Math.max(45, Math.min(70, finalMethane)); // Clamp display
+    finalMethane = Math.max(45, Math.min(70, finalMethane)); 
 
     // 4. Power Outputs
     const powerElectric = biogasHourly * SIMULATION_CONSTANTS.POWER_COEFF;
     const powerThermal = biogasHourly * SIMULATION_CONSTANTS.THERMAL_COEFF;
 
     // 5. Digestate Volumes & Nutrients
-    // Assume digestate mass out = feedstock mass in
     const digestateTotal = feedRate;
     const liquidFraction = dryMatter >= 12 ? 0.8 : 0.9;
     const liquidDigestate = digestateTotal * liquidFraction;
     const fibreDigestate = digestateTotal * (1 - liquidFraction);
 
-    // Nutrient Estimates (Daily)
     const dailyN = digestateTotal * SIMULATION_CONSTANTS.N_FACTOR;
     const dailyP = digestateTotal * SIMULATION_CONSTANTS.P_FACTOR;
     const dailyK = digestateTotal * SIMULATION_CONSTANTS.K_FACTOR;
 
-    // Annual N and Landbank
     const annualN = dailyN * 365;
     const landRequired = annualN / SIMULATION_CONSTANTS.NITROGEN_LIMIT;
 
@@ -215,10 +229,8 @@ const App: React.FC = () => {
       liquidDigestate: Math.round(liquidDigestate),
       fibreDigestate: Math.round(fibreDigestate),
       carbonSavings: Math.round(carbonSavings),
-      // Nutrient Data
       dailyN, dailyP, dailyK, annualN, landRequired,
       isHighN: highNRisk,
-      // For visual/context passing
       dominantFeedstock: FEEDSTOCKS[dominantFeedstockId]
     };
   }, [activeMix, dryMatter, temperature, feedRate, retentionTime]);
@@ -237,7 +249,6 @@ const App: React.FC = () => {
     setSelectedPartId(null);
   };
 
-  // Zoom Handlers
   const handleZoomIn = (e: React.MouseEvent) => {
     e.stopPropagation();
     setZoom(z => Math.min(z + 0.25, 2.5));
@@ -258,7 +269,6 @@ const App: React.FC = () => {
   return (
     <div className="relative w-full h-screen bg-gradient-to-b from-slate-50 to-[#F4F3FA] overflow-y-auto overflow-x-hidden flex flex-col">
       
-      {/* Metric Detail Modal Overlay */}
       <AnimatePresence>
         {activeMetric && (
           <MetricDetailModal 
@@ -283,12 +293,11 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Mobile-only Modal Controls */}
       {showControls && (
         <SimulationControls 
           variant="modal"
           feedRate={feedRate} setFeedRate={setFeedRate}
-          dryMatter={dryMatter} setDryMatter={setDryMatter}
+          dryMatter={dryMatter} setDryMatter={handleDryMatterChange}
           temperature={temperature} setTemperature={setTemperature}
           retentionTime={retentionTime} setRetentionTime={setRetentionTime}
           isRetentionLocked={isRetentionLocked} setIsRetentionLocked={setIsRetentionLocked}
@@ -297,39 +306,26 @@ const App: React.FC = () => {
         />
       )}
 
-      {/* Header HUD */}
       <header className="absolute top-0 left-0 w-full p-4 z-10 flex justify-between items-start pointer-events-none">
-        
-        {/* Branding & Mobile Controls */}
         <div className="pointer-events-auto flex flex-col gap-2 shrink-0">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
               BIOCON Group <span className="text-[#F29220]">AD Simulator</span>
             </h1>
-            <p className="text-slate-500 text-sm mt-1 hidden md:block max-w-md">
-              Interactive Anaerobic Digestion Model.
-            </p>
+            <div className="flex flex-col md:flex-row gap-2 md:items-center mt-1">
+               <p className="text-slate-500 text-sm hidden md:block max-w-md">
+                 Interactive Anaerobic Digestion Model.
+               </p>
+               <div className="md:hidden flex items-center gap-2 text-slate-500 text-xs bg-white/50 p-1.5 rounded-lg w-fit backdrop-blur-sm">
+                  <Info size={14} className="text-[#F29220]" />
+                  <span>Scroll for Dashboard • Click parts for Info</span>
+               </div>
+            </div>
           </div>
-
-          {/* Scenario Button (Mobile Only) */}
-          <button 
-            onClick={() => setShowControls(!showControls)}
-            className="md:hidden bg-white shadow-md border border-slate-200 rounded-lg px-4 py-2 flex items-center gap-3 hover:bg-slate-50 transition-colors min-w-[200px] justify-between"
-          >
-             <div className="flex items-center gap-2">
-                <Settings2 size={16} className="text-slate-600" />
-                <span className="font-bold text-slate-700 text-sm">Scenario Control</span>
-             </div>
-             <ChevronDown size={16} className={`text-slate-400 transition-transform ${showControls ? 'rotate-180' : ''}`} />
-          </button>
         </div>
-
       </header>
 
-      {/* Main 3D Viewport - Takes full height */}
       <main className="flex-none h-[75vh] min-h-[500px] relative overflow-hidden bg-slate-50/50 cursor-grab active:cursor-grabbing border-b border-slate-200" onClick={handleBackgroundClick}>
-        
-        {/* Zoom Controls */}
         <div className="absolute bottom-6 right-4 flex flex-col gap-2 z-30 pointer-events-auto">
            <button onClick={handleZoomIn} className="bg-white p-2.5 rounded-xl shadow-lg text-slate-600 hover:bg-slate-50 hover:text-brand border border-slate-100 transition-colors">
              <Plus size={20} />
@@ -351,7 +347,6 @@ const App: React.FC = () => {
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
         >
           <div className="w-full max-w-5xl p-4 md:p-10 pointer-events-none">
-             {/* Interactive children must enable pointer events */}
              <div className="pointer-events-auto">
                 <IsometricPlant 
                   onPartSelect={handlePartSelect} 
@@ -361,23 +356,11 @@ const App: React.FC = () => {
              </div>
           </div>
         </motion.div>
-        
-        {/* Hint Overlay if nothing selected */}
-        {!selectedPartId && !showControls && (
-          <div className="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none z-20 px-4">
-            <div className="bg-white/90 backdrop-blur-md border border-white/50 px-6 py-3 rounded-full shadow-xl flex items-center gap-2">
-              <Info size={18} className="text-[#F29220]" />
-              <span className="text-slate-600 text-sm font-medium whitespace-nowrap">Scroll down for Dashboard • Click parts for Info</span>
-            </div>
-          </div>
-        )}
       </main>
 
-      {/* DASHBOARD SECTION: Metrics, Controls, and Explorer */}
       <div className="bg-slate-50 border-t border-slate-200 p-4 md:p-8">
         <div className="max-w-7xl mx-auto flex flex-col gap-6">
           
-          {/* 1. Metrics Row */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
              <MetricCard 
                 icon={Wind} 
@@ -423,15 +406,13 @@ const App: React.FC = () => {
               />
           </div>
 
-          {/* 2. Split Dashboard: Controls (Left) + Digestate (Right) */}
           <div className="flex flex-col lg:flex-row gap-6 items-start">
             
-            {/* Desktop Side Panel: Embedded Simulation Controls */}
             <div className="hidden md:block w-full lg:w-80 shrink-0 sticky top-4">
               <SimulationControls 
                 variant="embedded"
                 feedRate={feedRate} setFeedRate={setFeedRate}
-                dryMatter={dryMatter} setDryMatter={setDryMatter}
+                dryMatter={dryMatter} setDryMatter={handleDryMatterChange}
                 temperature={temperature} setTemperature={setTemperature}
                 retentionTime={retentionTime} setRetentionTime={setRetentionTime}
                 isRetentionLocked={isRetentionLocked} setIsRetentionLocked={setIsRetentionLocked}
@@ -439,20 +420,37 @@ const App: React.FC = () => {
               />
             </div>
 
-            {/* Main Content Area: Digestate Explorer */}
-            <div className="flex-1 min-w-0 bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-              <DigestateExplorer 
-                liquidVol={simulationResults.liquidDigestate}
-                fibreVol={simulationResults.fibreDigestate}
-                dailyN={simulationResults.dailyN}
-                dailyP={simulationResults.dailyP}
-                dailyK={simulationResults.dailyK}
-                annualN={simulationResults.annualN}
-                landRequired={simulationResults.landRequired}
-                dryMatter={dryMatter}
-                temperature={temperature}
-                isHighNFeedstock={simulationResults.isHighN}
-              />
+            <div className="flex-1 min-w-0 flex flex-col gap-4">
+              
+              {/* Mobile Scenario Controls Button */}
+              <button 
+                onClick={() => setShowControls(true)}
+                className="md:hidden w-full bg-white shadow-sm border border-slate-200 rounded-xl px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors"
+              >
+                 <div className="flex items-center gap-2">
+                    <Settings2 size={18} className="text-brand" />
+                    <span className="font-bold text-slate-700">Configure Scenario</span>
+                 </div>
+                 <div className="flex items-center gap-2 text-xs text-slate-400">
+                    <span>Edit inputs</span>
+                    <ChevronDown size={16} />
+                 </div>
+              </button>
+
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <DigestateExplorer 
+                  liquidVol={simulationResults.liquidDigestate}
+                  fibreVol={simulationResults.fibreDigestate}
+                  dailyN={simulationResults.dailyN}
+                  dailyP={simulationResults.dailyP}
+                  dailyK={simulationResults.dailyK}
+                  annualN={simulationResults.annualN}
+                  landRequired={simulationResults.landRequired}
+                  dryMatter={dryMatter}
+                  temperature={temperature}
+                  isHighNFeedstock={simulationResults.isHighN}
+                />
+              </div>
             </div>
             
           </div>
@@ -460,11 +458,10 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      {/* Details Sidebar (Part Info) */}
       <InfoPanel 
         part={selectedPart} 
         currentFeedstock={simulationResults.dominantFeedstock}
-        // @ts-ignore - metrics now passed from simulation
+        // @ts-ignore
         metrics={simulationResults}
         onClose={handleClosePanel} 
       />

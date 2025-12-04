@@ -331,6 +331,8 @@ export interface Feedstock {
   
   // Library Attributes
   dmRange: string;
+  dmMin: number;
+  dmMax: number;
   contaminationNotes: string;
   storageNotes: string;
   preTreatmentNotes: string;
@@ -359,6 +361,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 180,
     methaneBasePercent: 54,
     dmRange: '20% - 25%',
+    dmMin: 20,
+    dmMax: 25,
     contaminationNotes: 'Stones from yard cleaning.',
     storageNotes: 'Concrete pads/clamps.',
     preTreatmentNotes: 'Maceration essential for straw.',
@@ -395,6 +399,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 160,
     methaneBasePercent: 52,
     dmRange: '4% - 8%',
+    dmMin: 4,
+    dmMax: 8,
     contaminationNotes: 'Low risk. Grit accumulation possible.',
     storageNotes: 'Reception pits/tanks.',
     preTreatmentNotes: 'Screening for stones.',
@@ -431,6 +437,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 200,
     methaneBasePercent: 58,
     dmRange: '30% - 35%',
+    dmMin: 30,
+    dmMax: 35,
     contaminationNotes: 'Very low.',
     storageNotes: 'Silage clamps. Must be airtight.',
     preTreatmentNotes: 'Precision chopping during harvest.',
@@ -467,6 +475,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 220,
     methaneBasePercent: 60,
     dmRange: '15% - 25%',
+    dmMin: 15,
+    dmMax: 25,
     contaminationNotes: 'High (Plastic, Cutlery, Glass).',
     storageNotes: 'Enclosed reception hall (Odor control).',
     preTreatmentNotes: 'De-packaging & Pasteurisation (ABP).',
@@ -503,6 +513,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 195,
     methaneBasePercent: 55,
     dmRange: '30% - 40%',
+    dmMin: 30,
+    dmMax: 40,
     contaminationNotes: 'Low.',
     storageNotes: 'Silage clamps.',
     preTreatmentNotes: 'Chopping.',
@@ -537,6 +549,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 170,
     methaneBasePercent: 52,
     dmRange: '40% - 60%',
+    dmMin: 40,
+    dmMax: 60,
     contaminationNotes: 'Grit/Bedding.',
     storageNotes: 'Covered storage (Ammonia loss).',
     preTreatmentNotes: 'Dilution often required.',
@@ -571,6 +585,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 210,
     methaneBasePercent: 54,
     dmRange: '10% - 15%',
+    dmMin: 10,
+    dmMax: 15,
     contaminationNotes: 'Stones/Soil.',
     storageNotes: 'Rapid spoilage. Use quickly.',
     preTreatmentNotes: 'Maceration.',
@@ -604,6 +620,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 210,
     methaneBasePercent: 56,
     dmRange: '20% - 25%',
+    dmMin: 20,
+    dmMax: 25,
     contaminationNotes: 'Low.',
     storageNotes: 'Silos or clamps.',
     preTreatmentNotes: 'None.',
@@ -640,6 +658,8 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     biogasYield10DM: 190,
     methaneBasePercent: 55,
     dmRange: '20% - 30%',
+    dmMin: 20,
+    dmMax: 30,
     contaminationNotes: 'Very High (Plastic).',
     storageNotes: 'Enclosed reception.',
     preTreatmentNotes: 'De-packaging.',

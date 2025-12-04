@@ -24,6 +24,8 @@ export const askGeminiAboutPlant = async (
     liquidDigestate: number;
     fibreDigestate: number;
     carbonSavings: number;
+    dailyN: number;
+    landRequired: number;
   }
 ): Promise<string> => {
   if (!aiClient) {
@@ -43,7 +45,8 @@ export const askGeminiAboutPlant = async (
     - Methane Concentration: ${metrics.methane}%
     - Electrical Power: ${metrics.power} MW
     - Thermal Output: ${metrics.thermal} MW
-    - Digestate Output: ${metrics.liquidDigestate}t liquid / ${metrics.fibreDigestate}t fibre per day
+    - Digestate Nutrient Load (N): ${Math.round(metrics.dailyN)} kg/day
+    - Landbank Required: ${Math.round(metrics.landRequired)} hectares
     - Carbon Savings: ${metrics.carbonSavings} tCO2/year
     
     The user is asking a question about the "${partData.title}" section.

@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { FEEDSTOCKS } from '../constants';
 import { Plus, X, Info, AlertTriangle, Layers, ArrowRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 interface FeedstockMixItem {
   id: string;
@@ -20,13 +19,10 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
 
   const handleAddFeedstock = (id: string) => {
     if (activeMix.find(item => item.id === id)) return;
-    if (activeMix.length >= 3) return; // Limit to 3 for simplicity
+    if (activeMix.length >= 3) return;
 
-    // Add new item with 0% initially, or split remaining?
-    // Let's add with 10% and reduce others proportionally
+    // Add new item with 0% initially, user can adjust
     const newMix = [...activeMix, { id, percentage: 0 }];
-    // Rebalance to give new item space is tricky, let's just add at 0 and let user adjust
-    // OR: Normalize logic. Let's just add.
     onMixChange(newMix);
     setViewMode('mixer');
   };
@@ -34,12 +30,14 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
   const handleRemoveFeedstock = (id: string) => {
     if (activeMix.length <= 1) return; // Prevent empty
     const remaining = activeMix.filter(item => item.id !== id);
+    
     // Normalize remaining to 100%
     const totalCurrent = remaining.reduce((sum, item) => sum + item.percentage, 0);
     const normalized = remaining.map(item => ({
       ...item,
       percentage: Math.round((item.percentage / totalCurrent) * 100)
     }));
+    
     // Fix rounding errors
     const sum = normalized.reduce((s, i) => s + i.percentage, 0);
     if (sum < 100) normalized[0].percentage += (100 - sum);
@@ -65,15 +63,11 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
     let newMix = activeMix.map(item => {
       if (item.id === id) return { ...item, percentage: newValue };
       
-      // Proportional reduction
-      // If totalOthers is 0 (all others are 0), we can't divide. Just subtract equally?
       let newPct = item.percentage;
       if (totalOthers > 0) {
         const share = item.percentage / totalOthers;
         newPct = item.percentage - (diff * share);
       } else {
-        // If others are 0, they stay 0 unless we are decreasing the main one?
-        // Simple fallback: distribute equally
         newPct = item.percentage - (diff / others.length);
       }
       return { ...item, percentage: Math.max(0, newPct) };
@@ -81,20 +75,20 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
 
     // Final normalization to ensure exact 100 due to float math
     const total = newMix.reduce((sum, item) => sum + item.percentage, 0);
-    // Adjust the modified item slightly if needed, or the largest other
+    
     if (total !== 100) {
-       // Find item with max percentage to absorb rounding error, prefer not the one being dragged
+       // Find item with max percentage to absorb rounding error
        const absorbIdx = newMix.findIndex(i => i.id !== id && i.percentage > 0) || 0;
        newMix[absorbIdx].percentage += (100 - total);
     }
     
-    // Round all to integers for clean UI
+    // Round to integers
     newMix = newMix.map(i => ({...i, percentage: Math.round(i.percentage)}));
     
     // One last check sum
     const finalSum = newMix.reduce((s, i) => s + i.percentage, 0);
     if (finalSum !== 100) {
-       const idx = newMix.findIndex(i => i.id !== id); // adjust a neighbor
+       const idx = newMix.findIndex(i => i.id !== id); 
        if (idx >= 0) newMix[idx].percentage += (100 - finalSum);
     }
 
@@ -123,7 +117,7 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
       <div className="p-4">
         {viewMode === 'mixer' ? (
           <div className="space-y-4">
-            {activeMix.map((item, idx) => {
+            {activeMix.map((item) => {
               const fs = FEEDSTOCKS[item.id];
               return (
                 <div key={item.id} className="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
@@ -169,7 +163,7 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
           <div className="space-y-4">
             {/* Library View */}
              {!selectedLibraryItem ? (
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto">
                   {Object.values(FEEDSTOCKS).map(fs => {
                     const isSelected = activeMix.some(m => m.id === fs.id);
                     return (
@@ -227,7 +221,7 @@ const FeedstockManager: React.FC<FeedstockManagerProps> = ({ activeMix, onMixCha
                           </div>
                           
                           <div className="space-y-2 mb-4">
-                             <p className="text-xs text-slate-600"><strong className="text-slate-800">Note:</strong> {fs.operationalNotes}</p>
+                             <p className="text-xs text-slate-600"><strong className="text-slate-800">Operational:</strong> {fs.operationalNotes}</p>
                              <p className="text-xs text-slate-600"><strong className="text-slate-800">Contamination:</strong> {fs.contaminationNotes}</p>
                           </div>
 
