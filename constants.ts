@@ -324,22 +324,23 @@ export interface Feedstock {
   id: string;
   name: string;
   description: string;
-  yieldFactor: number; // Multiplier for visual output calc
-  methaneContent: string;
-  color: string; // Hex for SVG visualization
-  themeClass: string; // Keep for reference
-  styles: FeedstockStyles; // Explicit classes for Tailwind
+  yieldFactor: number; // Deprecated in favor of calculation engine but kept for legacy
+  methaneContent: string; // Display string
   
-  // Educational Metrics
-  expectedGasYield: string; // e.g. "180 m³/t"
-  contaminationRisk: string; // e.g. "Low"
-  requiredPreTreatment: string; // e.g. "Maceration"
-  digestateCharacteristics: string; // e.g. "High Nitrogen"
-  revenueRoutes: string; // e.g. "Gate Fees"
+  // Math Engine Constants
+  biogasYield10DM: number; // m3/tonne at 10% Dry Matter
+  methaneBasePercent: number; // Base % before modifiers
   
-  // KPI Simulation Data
-  retentionTime: string; // e.g. "45 days"
-  feedRate: string; // e.g. "40 t/d"
+  color: string;
+  themeClass: string;
+  styles: FeedstockStyles;
+  
+  // Educational Metrics (Display Only)
+  expectedGasYield: string;
+  contaminationRisk: string;
+  requiredPreTreatment: string;
+  digestateCharacteristics: string;
+  revenueRoutes: string;
   
   impacts: Record<string, string>;
 }
@@ -350,8 +351,10 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     name: 'Cow Manure',
     description: 'Farm yard manure with straw.',
     yieldFactor: 0.8,
-    methaneContent: '55%',
-    color: '#78350f', // Brown
+    methaneContent: '54%',
+    biogasYield10DM: 180,
+    methaneBasePercent: 54,
+    color: '#78350f',
     themeClass: 'amber',
     styles: {
       dotColor: 'bg-amber-700',
@@ -367,8 +370,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'Maceration',
     digestateCharacteristics: 'High fiber, Standard NPK',
     revenueRoutes: 'Cost savings (Fertilizer)',
-    retentionTime: '40 days',
-    feedRate: '45 t/d',
     impacts: {
       'feedstock': 'Solid manure requires a robust hopper and macerators to chop straw bedding.',
       'digester': 'Provides excellent buffering capacity and bacterial stability, though gas yield per volume is low.',
@@ -382,7 +383,9 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     description: 'Liquid farm waste.',
     yieldFactor: 0.5,
     methaneContent: '52%',
-    color: '#57534e', // Stone/Dark Grey
+    biogasYield10DM: 160,
+    methaneBasePercent: 52,
+    color: '#57534e',
     themeClass: 'stone',
     styles: {
       dotColor: 'bg-stone-600',
@@ -398,8 +401,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'Screening (Stones)',
     digestateCharacteristics: 'Low Dry Solids, Liquid Fertilizer',
     revenueRoutes: 'Cost savings',
-    retentionTime: '25 days',
-    feedRate: '60 t/d',
     impacts: {
       'feedstock': 'Pumped directly into reception tanks. Easiest material to handle but high volume.',
       'feeder': 'Uses rotary lobe pumps rather than screw conveyors.',
@@ -412,8 +413,10 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     name: 'Maize Silage',
     description: 'High energy crop.',
     yieldFactor: 1.6,
-    methaneContent: '53%',
-    color: '#a3e635', // Bright Green
+    methaneContent: '58%',
+    biogasYield10DM: 200,
+    methaneBasePercent: 58,
+    color: '#a3e635',
     themeClass: 'lime',
     styles: {
       dotColor: 'bg-lime-500',
@@ -429,8 +432,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'Precision Chopping',
     digestateCharacteristics: 'Balanced Nutrient Profile',
     revenueRoutes: 'Energy Sales (Crop is a cost)',
-    retentionTime: '55 days',
-    feedRate: '28 t/d',
     impacts: {
       'feedstock': 'Stored in clamps. Must be kept airtight to prevent aerobic spoilage before digestion.',
       'digester': 'High energy density. Can cause acidification if fed too fast. Requires robust mixing.',
@@ -443,8 +444,10 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     name: 'Food Waste',
     description: 'Commercial/Household scraps.',
     yieldFactor: 1.5,
-    methaneContent: '58%',
-    color: '#f97316', // Orange
+    methaneContent: '60%',
+    biogasYield10DM: 220,
+    methaneBasePercent: 60,
+    color: '#f97316',
     themeClass: 'orange',
     styles: {
       dotColor: 'bg-orange-500',
@@ -460,8 +463,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'De-packaging & Pasteurization',
     digestateCharacteristics: 'High Nitrogen, Regulated',
     revenueRoutes: 'Gate Fees + Energy',
-    retentionTime: '35 days',
-    feedRate: '32 t/d',
     impacts: {
       'feedstock': 'Requires intense pre-treatment: removal of packaging and heating to 70°C for 1 hour (Pasteurization).',
       'digester': 'Very rapid breakdown. Can be volatile. Needs careful monitoring of FOS/TAC ratio.',
@@ -475,7 +476,9 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     description: 'Spent malt/hops.',
     yieldFactor: 1.2,
     methaneContent: '56%',
-    color: '#d97706', // Amber/Gold
+    biogasYield10DM: 210,
+    methaneBasePercent: 56,
+    color: '#d97706',
     themeClass: 'amber',
     styles: {
       dotColor: 'bg-amber-500',
@@ -491,8 +494,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'Mixing/Dilution',
     digestateCharacteristics: 'High Protein/Nitrogen',
     revenueRoutes: 'Gate Fee / Low Cost Feedstock',
-    retentionTime: '30 days',
-    feedRate: '38 t/d',
     impacts: {
       'feedstock': 'Often arrives warm. Prone to very rapid spoilage if not fed immediately.',
       'digester': 'Excellent gas producer but high protein content can lead to ammonia inhibition if not balanced.',
@@ -505,8 +506,10 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     name: 'Mixed Commercial',
     description: 'Restaurant/Supermarket waste.',
     yieldFactor: 1.4,
-    methaneContent: '57%',
-    color: '#a8a29e', // Grey
+    methaneContent: '55%',
+    biogasYield10DM: 190,
+    methaneBasePercent: 55,
+    color: '#a8a29e',
     themeClass: 'stone',
     styles: {
       dotColor: 'bg-stone-400',
@@ -522,8 +525,6 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     requiredPreTreatment: 'Separation/Hammer Mill',
     digestateCharacteristics: 'Variable Quality',
     revenueRoutes: 'High Gate Fees',
-    retentionTime: '40 days',
-    feedRate: '35 t/d',
     impacts: {
       'feedstock': 'Critical Control Point: Removing contaminants (forks, plastic) is essential to protect machinery.',
       'feeder': 'Requires robust macerating pumps to handle diverse particle sizes.',
@@ -569,5 +570,62 @@ export const METRIC_EXPLANATIONS: Record<string, { title: string; description: s
     description: "The tonnage of fresh material added to the system every 24 hours.",
     whyItMatters: "Stability is key. 'Little and often' feeding prevents acid spikes. Overfeeding causes 'indigestion' (acidosis); underfeeding causes starvation.",
     optimalRange: "Consistent with biological capacity"
+  },
+  carbon: {
+    title: "Carbon Savings",
+    description: "Estimated tonnes of CO2 saved annually by replacing fossil fuel electricity.",
+    whyItMatters: "Key driver for sustainability goals and environmental permits.",
+    optimalRange: "Higher is better"
+  },
+  liquid: {
+    title: "Liquid Digestate",
+    description: "Daily volume of liquid bio-fertilizer produced.",
+    whyItMatters: "Must be stored (typically 6 months capacity required) and spread on land.",
+    optimalRange: "Manageable within storage limits"
+  },
+  fibre: {
+    title: "Fibre Digestate",
+    description: "Daily tonnage of solid soil conditioner produced.",
+    whyItMatters: "Can be used for bedding or sold as high-quality compost.",
+    optimalRange: "Dependent on markets"
   }
+};
+
+export const SIMULATION_CONSTANTS = {
+  DIGESTER_VOLUME: 1800, // Derived from 45tpd * 40days
+  POWER_COEFF: 0.00267, // MW per m3/h
+  THERMAL_COEFF: 0.00306, // MW per m3/h
+  CARBON_COEFF: 0.35, // tCO2 per MWh
+  OPERATING_HOURS: 8000,
+  // Nutrient Factors per tonne of digestate
+  N_FACTOR: 4.0, // kg/t
+  P_FACTOR: 1.5, // kg/t
+  K_FACTOR: 3.0, // kg/t
+  NITROGEN_LIMIT: 250 // kg/ha/year
+};
+
+export const SCENARIO_TOOLTIPS = {
+  feedstock: "Different materials have different 'energy densities'. Fats and sugars release gas quickly; fibrous materials take longer. Mixing them can stabilize the process.",
+  feedRate: "The amount of 'food' given to the bacteria per day. Too much can overload them (acidosis); too little causes starvation. Higher feed rates reduce Retention Time.",
+  dryMatter: "The % of solid material vs water. Higher DM means more energy per tonne but is harder to pump and mix. >12% typically requires specialist pumps.",
+  temperature: "Mesophilic (38-42°C) is stable and robust. Thermophilic (50-55°C) is faster and kills more pathogens but is more sensitive to temperature shocks.",
+  retention: "How long material stays in the tank. Bacteria need time to break down food. <30 days risks washing out bacteria and wasting gas potential."
+};
+
+export const DIGESTATE_TOOLTIPS = {
+  nitrogen: "Total Nitrogen (N). Essential for plant growth. In digestate, much of this is readily available ammonium-N, making it a powerful fast-acting fertilizer.",
+  phosphate: "Phosphate (P2O5). Key for root development. Digestate preserves the phosphorus from the feedstock, recycling it back to the soil.",
+  potash: "Potash (K2O). Vital for crop health and water regulation. Liquid digestate is particularly rich in Potassium.",
+  landbank: "The area of agricultural land required to spread the digestate legally. Based on the Nitrate Pollution Prevention Regulations (250kg N/ha/yr limit).",
+  pas110: "Publicly Available Specification (PAS) 110. The industry standard for end-of-waste status. Certified digestate is a 'product', not 'waste', removing regulatory burdens."
+};
+
+export const SIMULATION_DEFAULTS = {
+  feedRate: 45,
+  dryMatter: 10,
+  temperature: 'meso' as const,
+  retentionLocked: false,
+  feedstockA: 'manure',
+  feedstockB: 'food_waste',
+  mixRatio: 0 // 0 = 100% A, 100 = 100% B
 };

@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { PLANT_DATA, Feedstock } from "../constants";
 
@@ -13,7 +14,17 @@ export const askGeminiAboutPlant = async (
   question: string, 
   contextId: string, 
   feedstock: Feedstock,
-  metrics: { gas: number; power: string }
+  metrics: { 
+    gas: number; 
+    power: string; 
+    thermal: string; 
+    methane: string; 
+    retention: number; 
+    feedRate: number;
+    liquidDigestate: number;
+    fibreDigestate: number;
+    carbonSavings: number;
+  }
 ): Promise<string> => {
   if (!aiClient) {
     return "API Key is missing. Please configure the environment.";
@@ -23,28 +34,28 @@ export const askGeminiAboutPlant = async (
   
   const contextPrompt = `
     You are an expert engineer at an Anaerobic Digestion (AD) plant.
-    The plant is currently operating using **${feedstock.name}** as the primary feedstock.
     
-    Current Live Plant Metrics:
-    - Biogas Production: ${metrics.gas} m³/h
-    - Power Generation: ${metrics.power} MW
-    
-    Context about the current feedstock (${feedstock.name}):
-    - Description: ${feedstock.description}
-    - Impact on this section: ${feedstock.impacts[contextId] || 'Standard operation.'}
+    Current Simulation Scenario:
+    - Primary Feedstock Characteristic: ${feedstock.name}
+    - Daily Feed Rate: ${metrics.feedRate} tonnes/day
+    - Retention Time: ${metrics.retention} days
+    - Biogas Output: ${metrics.gas} m³/h
+    - Methane Concentration: ${metrics.methane}%
+    - Electrical Power: ${metrics.power} MW
+    - Thermal Output: ${metrics.thermal} MW
+    - Digestate Output: ${metrics.liquidDigestate}t liquid / ${metrics.fibreDigestate}t fibre per day
+    - Carbon Savings: ${metrics.carbonSavings} tCO2/year
     
     The user is asking a question about the "${partData.title}" section.
     
     General context about this section:
     ${partData.fullDescription}
     
-    Technical Details:
-    ${partData.technicalDetails.join(', ')}
-    
     User Question: "${question}"
     
-    Provide a concise, educational answer (under 100 words) suitable for a student or visitor. 
-    Explicitly mention how the current feedstock (${feedstock.name}) or current production levels affect this part of the process if relevant.
+    Provide a concise, educational answer (under 100 words).
+    Use the simulation data above to explain *why* performance is at this level.
+    For example, if retention time is low (<30 days), warn about washout. If feed rate is high, mention stability.
   `;
 
   try {
