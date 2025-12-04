@@ -1,7 +1,13 @@
 
 import React from 'react';
-import { HelpCircle, AlertTriangle, Lock, Unlock, RefreshCw, ThermometerSun, Leaf, Settings2 } from 'lucide-react';
-import { FEEDSTOCKS, SCENARIO_TOOLTIPS } from '../constants';
+import { HelpCircle, AlertTriangle, Lock, Unlock, RefreshCw, ThermometerSun, Settings2 } from 'lucide-react';
+import { SCENARIO_TOOLTIPS } from '../constants';
+import FeedstockManager from './FeedstockManager';
+
+interface FeedstockMixItem {
+  id: string;
+  percentage: number;
+}
 
 interface SimulationControlsProps {
   feedRate: number;
@@ -14,12 +20,11 @@ interface SimulationControlsProps {
   setRetentionTime: (val: number) => void;
   isRetentionLocked: boolean;
   setIsRetentionLocked: (val: boolean) => void;
-  feedstockA: string;
-  setFeedstockA: (val: string) => void;
-  feedstockB: string;
-  setFeedstockB: (val: string) => void;
-  mixRatio: number;
-  setMixRatio: (val: number) => void;
+  
+  // Replaced individual feedstock props with mix array
+  activeMix: FeedstockMixItem[];
+  onMixChange: (mix: FeedstockMixItem[]) => void;
+
   onClose?: () => void;
   variant?: 'modal' | 'embedded';
 }
@@ -82,9 +87,7 @@ const SimulationControls: React.FC<SimulationControlsProps> = ({
   temperature, setTemperature,
   retentionTime, setRetentionTime,
   isRetentionLocked, setIsRetentionLocked,
-  feedstockA, setFeedstockA,
-  feedstockB, setFeedstockB,
-  mixRatio, setMixRatio,
+  activeMix, onMixChange,
   onClose,
   variant = 'modal'
 }) => {
@@ -107,7 +110,7 @@ const SimulationControls: React.FC<SimulationControlsProps> = ({
   return (
     <div className={containerClasses}>
       
-      {/* Header - Only show in Modal mode or if we want a title in embedded */}
+      {/* Header */}
       <div className="bg-slate-900 p-4 flex justify-between items-center shrink-0">
         <div className="flex items-center gap-2 text-white">
           <Settings2 size={20} className="text-brand" />
@@ -122,48 +125,10 @@ const SimulationControls: React.FC<SimulationControlsProps> = ({
 
       <div className="p-5 overflow-y-auto custom-scrollbar">
         
-        {/* Feedstock Mix Section */}
-        <div className="mb-8 p-4 bg-slate-50 rounded-xl border border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-             <Leaf size={16} className="text-green-600" />
-             <span className="text-xs font-bold text-slate-500 uppercase">Feedstock Mixture</span>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <select 
-              value={feedstockA} 
-              onChange={(e) => setFeedstockA(e.target.value)}
-              className="text-xs p-2 rounded border border-slate-200 bg-white focus:border-brand outline-none"
-            >
-              {Object.values(FEEDSTOCKS).map(f => (
-                <option key={f.id} value={f.id}>{f.name}</option>
-              ))}
-            </select>
-            <select 
-              value={feedstockB} 
-              onChange={(e) => setFeedstockB(e.target.value)}
-              className="text-xs p-2 rounded border border-slate-200 bg-white focus:border-brand outline-none"
-            >
-              {Object.values(FEEDSTOCKS).map(f => (
-                <option key={f.id} value={f.id}>{f.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="relative pt-1">
-             <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={mixRatio} 
-                onChange={(e) => setMixRatio(parseInt(e.target.value))}
-                className="w-full h-2 bg-gradient-to-r from-amber-500 to-blue-500 rounded-lg appearance-none cursor-pointer"
-             />
-             <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-1">
-                <span>{100 - mixRatio}% {FEEDSTOCKS[feedstockA].name}</span>
-                <span>{mixRatio}% {FEEDSTOCKS[feedstockB].name}</span>
-             </div>
-          </div>
+        {/* NEW Feedstock Manager */}
+        <div className="mb-8">
+           <label className="text-sm font-bold text-slate-700 uppercase tracking-wide mb-2 block">Feedstock Mix</label>
+           <FeedstockManager activeMix={activeMix} onMixChange={onMixChange} />
         </div>
 
         {/* Operating Parameters */}
@@ -215,7 +180,7 @@ const SimulationControls: React.FC<SimulationControlsProps> = ({
           </div>
         </div>
 
-        {/* Retention Time (Calculated/Locked) */}
+        {/* Retention Time */}
         <div className="mb-4">
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2">

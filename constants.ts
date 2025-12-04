@@ -324,24 +324,30 @@ export interface Feedstock {
   id: string;
   name: string;
   description: string;
-  yieldFactor: number; // Deprecated in favor of calculation engine but kept for legacy
-  methaneContent: string; // Display string
   
   // Math Engine Constants
   biogasYield10DM: number; // m3/tonne at 10% Dry Matter
   methaneBasePercent: number; // Base % before modifiers
   
+  // Library Attributes
+  dmRange: string;
+  contaminationNotes: string;
+  storageNotes: string;
+  preTreatmentNotes: string;
+  nitrogenPotential: 'Low' | 'Medium' | 'High' | 'Very High';
+  operationalNotes: string;
+
   color: string;
   themeClass: string;
   styles: FeedstockStyles;
   
-  // Educational Metrics (Display Only)
+  // Display Helpers
   expectedGasYield: string;
+  methaneContent: string;
   contaminationRisk: string;
   requiredPreTreatment: string;
   digestateCharacteristics: string;
   revenueRoutes: string;
-  
   impacts: Record<string, string>;
 }
 
@@ -350,10 +356,14 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     id: 'manure',
     name: 'Cow Manure',
     description: 'Farm yard manure with straw.',
-    yieldFactor: 0.8,
-    methaneContent: '54%',
     biogasYield10DM: 180,
     methaneBasePercent: 54,
+    dmRange: '20% - 25%',
+    contaminationNotes: 'Stones from yard cleaning.',
+    storageNotes: 'Concrete pads/clamps.',
+    preTreatmentNotes: 'Maceration essential for straw.',
+    nitrogenPotential: 'Medium',
+    operationalNotes: 'Stable baseload. Low energy density.',
     color: '#78350f',
     themeClass: 'amber',
     styles: {
@@ -366,6 +376,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-amber-800'
     },
     expectedGasYield: '25 - 40 m³/tonne',
+    methaneContent: '54%',
     contaminationRisk: 'Low (Stones)',
     requiredPreTreatment: 'Maceration',
     digestateCharacteristics: 'High fiber, Standard NPK',
@@ -379,12 +390,16 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
   },
   'slurry': {
     id: 'slurry',
-    name: 'Cattle Slurry',
+    name: 'Dairy Slurry',
     description: 'Liquid farm waste.',
-    yieldFactor: 0.5,
-    methaneContent: '52%',
     biogasYield10DM: 160,
     methaneBasePercent: 52,
+    dmRange: '4% - 8%',
+    contaminationNotes: 'Low risk. Grit accumulation possible.',
+    storageNotes: 'Reception pits/tanks.',
+    preTreatmentNotes: 'Screening for stones.',
+    nitrogenPotential: 'Low',
+    operationalNotes: 'Very high volume, low yield per tonne.',
     color: '#57534e',
     themeClass: 'stone',
     styles: {
@@ -397,6 +412,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-stone-700'
     },
     expectedGasYield: '15 - 25 m³/tonne',
+    methaneContent: '52%',
     contaminationRisk: 'Low',
     requiredPreTreatment: 'Screening (Stones)',
     digestateCharacteristics: 'Low Dry Solids, Liquid Fertilizer',
@@ -412,10 +428,14 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     id: 'crops',
     name: 'Maize Silage',
     description: 'High energy crop.',
-    yieldFactor: 1.6,
-    methaneContent: '58%',
     biogasYield10DM: 200,
     methaneBasePercent: 58,
+    dmRange: '30% - 35%',
+    contaminationNotes: 'Very low.',
+    storageNotes: 'Silage clamps. Must be airtight.',
+    preTreatmentNotes: 'Precision chopping during harvest.',
+    nitrogenPotential: 'Medium',
+    operationalNotes: 'High cost input. Consistent quality.',
     color: '#a3e635',
     themeClass: 'lime',
     styles: {
@@ -428,6 +448,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-lime-900'
     },
     expectedGasYield: '200 - 220 m³/tonne',
+    methaneContent: '58%',
     contaminationRisk: 'Very Low',
     requiredPreTreatment: 'Precision Chopping',
     digestateCharacteristics: 'Balanced Nutrient Profile',
@@ -443,10 +464,14 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     id: 'food_waste',
     name: 'Food Waste',
     description: 'Commercial/Household scraps.',
-    yieldFactor: 1.5,
-    methaneContent: '60%',
     biogasYield10DM: 220,
     methaneBasePercent: 60,
+    dmRange: '15% - 25%',
+    contaminationNotes: 'High (Plastic, Cutlery, Glass).',
+    storageNotes: 'Enclosed reception hall (Odor control).',
+    preTreatmentNotes: 'De-packaging & Pasteurisation (ABP).',
+    nitrogenPotential: 'High',
+    operationalNotes: 'High yield but prone to instability/foaming.',
     color: '#f97316',
     themeClass: 'orange',
     styles: {
@@ -459,6 +484,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-orange-800'
     },
     expectedGasYield: '160 - 180 m³/tonne',
+    methaneContent: '60%',
     contaminationRisk: 'High (Plastics/Metals)',
     requiredPreTreatment: 'De-packaging & Pasteurization',
     digestateCharacteristics: 'High Nitrogen, Regulated',
@@ -470,14 +496,119 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       'storage': 'Strict veterinary controls on where digestate can be spread (no grazing land).'
     }
   },
+  'rye': {
+    id: 'rye',
+    name: 'Wholecrop Rye',
+    description: 'Cereal crop silage.',
+    biogasYield10DM: 195,
+    methaneBasePercent: 55,
+    dmRange: '30% - 40%',
+    contaminationNotes: 'Low.',
+    storageNotes: 'Silage clamps.',
+    preTreatmentNotes: 'Chopping.',
+    nitrogenPotential: 'Medium',
+    operationalNotes: 'Alternative to maize. Good for rotation.',
+    color: '#d4d4d8', // zinc-300
+    themeClass: 'zinc',
+    styles: {
+      dotColor: 'bg-zinc-400',
+      iconBg: 'bg-zinc-100',
+      iconText: 'text-zinc-600',
+      alertBg: 'bg-zinc-50',
+      alertBorder: 'border-zinc-400',
+      alertTitle: 'text-zinc-800',
+      alertText: 'text-zinc-700'
+    },
+    expectedGasYield: '170 - 190 m³/tonne',
+    methaneContent: '55%',
+    contaminationRisk: 'Low',
+    requiredPreTreatment: 'Chopping',
+    digestateCharacteristics: 'Good fiber',
+    revenueRoutes: 'Energy Sales',
+    impacts: {
+      'feedstock': 'Harvested earlier than maize. Fits well into crop rotation.',
+      'digester': 'Slightly slower breakdown than maize due to straw content.',
+    }
+  },
+  'chicken': {
+    id: 'chicken',
+    name: 'Chicken Manure',
+    description: 'Poultry litter.',
+    biogasYield10DM: 170,
+    methaneBasePercent: 52,
+    dmRange: '40% - 60%',
+    contaminationNotes: 'Grit/Bedding.',
+    storageNotes: 'Covered storage (Ammonia loss).',
+    preTreatmentNotes: 'Dilution often required.',
+    nitrogenPotential: 'Very High',
+    operationalNotes: 'Ammonia inhibition risk. Limit to <20% of mix.',
+    color: '#fcd34d', // amber-300
+    themeClass: 'yellow',
+    styles: {
+      dotColor: 'bg-yellow-400',
+      iconBg: 'bg-yellow-100',
+      iconText: 'text-yellow-600',
+      alertBg: 'bg-yellow-50',
+      alertBorder: 'border-yellow-400',
+      alertTitle: 'text-yellow-900',
+      alertText: 'text-yellow-800'
+    },
+    expectedGasYield: '90 - 120 m³/tonne',
+    methaneContent: '52%',
+    contaminationRisk: 'Medium (Grit)',
+    requiredPreTreatment: 'Dilution',
+    digestateCharacteristics: 'Very High Nitrogen',
+    revenueRoutes: 'Cost savings',
+    impacts: {
+      'digester': 'CAUTION: High ammonia levels can become toxic to bacteria. Monitor pH closely.',
+      'storage': 'Digestate is extremely potent fertilizer.'
+    }
+  },
+  'fruit_veg': {
+    id: 'fruit_veg',
+    name: 'Fruit & Veg',
+    description: 'Processing residues.',
+    biogasYield10DM: 210,
+    methaneBasePercent: 54,
+    dmRange: '10% - 15%',
+    contaminationNotes: 'Stones/Soil.',
+    storageNotes: 'Rapid spoilage. Use quickly.',
+    preTreatmentNotes: 'Maceration.',
+    nitrogenPotential: 'Low',
+    operationalNotes: 'Acidic sugar rush. Buffer capacity needed.',
+    color: '#ef4444', // red-500
+    themeClass: 'red',
+    styles: {
+      dotColor: 'bg-red-500',
+      iconBg: 'bg-red-100',
+      iconText: 'text-red-600',
+      alertBg: 'bg-red-50',
+      alertBorder: 'border-red-500',
+      alertTitle: 'text-red-900',
+      alertText: 'text-red-800'
+    },
+    expectedGasYield: '40 - 60 m³/tonne',
+    methaneContent: '54%',
+    contaminationRisk: 'Medium',
+    requiredPreTreatment: 'Stone removal',
+    digestateCharacteristics: 'Low nutrient value',
+    revenueRoutes: 'Gate fee',
+    impacts: {
+      'digester': 'Sugars degrade instantly to acid. Risk of acidosis if not buffered with manure.'
+    }
+  },
   'brewery': {
     id: 'brewery',
     name: 'Brewery Grain',
     description: 'Spent malt/hops.',
-    yieldFactor: 1.2,
-    methaneContent: '56%',
     biogasYield10DM: 210,
     methaneBasePercent: 56,
+    dmRange: '20% - 25%',
+    contaminationNotes: 'Low.',
+    storageNotes: 'Silos or clamps.',
+    preTreatmentNotes: 'None.',
+    nitrogenPotential: 'High',
+    operationalNotes: 'Consistent baseload.',
     color: '#d97706',
     themeClass: 'amber',
     styles: {
@@ -490,6 +621,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-amber-800'
     },
     expectedGasYield: '110 - 130 m³/tonne',
+    methaneContent: '56%',
     contaminationRisk: 'Low',
     requiredPreTreatment: 'Mixing/Dilution',
     digestateCharacteristics: 'High Protein/Nitrogen',
@@ -505,10 +637,14 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
     id: 'commercial',
     name: 'Mixed Commercial',
     description: 'Restaurant/Supermarket waste.',
-    yieldFactor: 1.4,
-    methaneContent: '55%',
     biogasYield10DM: 190,
     methaneBasePercent: 55,
+    dmRange: '20% - 30%',
+    contaminationNotes: 'Very High (Plastic).',
+    storageNotes: 'Enclosed reception.',
+    preTreatmentNotes: 'De-packaging.',
+    nitrogenPotential: 'Medium',
+    operationalNotes: 'Variable quality. Robust tech needed.',
     color: '#a8a29e',
     themeClass: 'stone',
     styles: {
@@ -521,6 +657,7 @@ export const FEEDSTOCKS: Record<string, Feedstock> = {
       alertText: 'text-stone-700'
     },
     expectedGasYield: '140 - 180 m³/tonne',
+    methaneContent: '55%',
     contaminationRisk: 'Very High',
     requiredPreTreatment: 'Separation/Hammer Mill',
     digestateCharacteristics: 'Variable Quality',
@@ -625,7 +762,8 @@ export const SIMULATION_DEFAULTS = {
   dryMatter: 10,
   temperature: 'meso' as const,
   retentionLocked: false,
-  feedstockA: 'manure',
-  feedstockB: 'food_waste',
-  mixRatio: 0 // 0 = 100% A, 100 = 100% B
+  activeMix: [
+    { id: 'manure', percentage: 60 },
+    { id: 'food_waste', percentage: 40 }
+  ]
 };

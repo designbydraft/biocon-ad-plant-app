@@ -5,7 +5,7 @@ import InfoPanel from './components/InfoPanel';
 import SimulationControls from './components/SimulationControls';
 import DigestateExplorer from './components/DigestateExplorer';
 import { PLANT_DATA, FEEDSTOCKS, METRIC_EXPLANATIONS, SIMULATION_CONSTANTS, SIMULATION_DEFAULTS, Feedstock } from './constants';
-import { Info, Leaf, Wind, Zap, ChevronDown, Plus, Minus, Undo2, Thermometer, FlaskConical, Timer, Scale, HelpCircle, X, Settings2, Droplets, Sprout, LeafyGreen } from 'lucide-react';
+import { Info, Leaf, Wind, Zap, ChevronDown, Plus, Minus, Undo2, Thermometer, FlaskConical, Timer, HelpCircle, X, Settings2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Reusable Metric Card Component ---
@@ -115,9 +115,8 @@ const App: React.FC = () => {
   const [retentionTime, setRetentionTime] = useState(SIMULATION_DEFAULTS.feedRate > 0 ? SIMULATION_CONSTANTS.DIGESTER_VOLUME / SIMULATION_DEFAULTS.feedRate : 40);
   const [isRetentionLocked, setIsRetentionLocked] = useState(SIMULATION_DEFAULTS.retentionLocked);
   
-  const [feedstockA, setFeedstockA] = useState(SIMULATION_DEFAULTS.feedstockA);
-  const [feedstockB, setFeedstockB] = useState(SIMULATION_DEFAULTS.feedstockB);
-  const [mixRatio, setMixRatio] = useState(SIMULATION_DEFAULTS.mixRatio); // 0-100% of B
+  // NEW: Active Mix Array State instead of individual A/B
+  const [activeMix, setActiveMix] = useState(SIMULATION_DEFAULTS.activeMix);
 
   // Effect: Recalculate Retention Time if not locked
   useEffect(() => {
@@ -129,14 +128,33 @@ const App: React.FC = () => {
 
   // Derived Simulation Metrics
   const simulationResults = useMemo(() => {
-    // 1. Feedstock Factors
-    const fA = FEEDSTOCKS[feedstockA];
-    const fB = FEEDSTOCKS[feedstockB];
-    const pctB = mixRatio / 100;
-    const pctA = 1 - pctB;
+    // 1. Calculate weighted averages from the mix
+    let mixedYield10DM = 0;
+    let mixedMethaneBase = 0;
+    let dominantFeedstockId = 'manure';
+    let maxPct = 0;
+    let hasHighN = false;
+    let highNRisk = false;
 
-    // Mixed 10% DM Yield
-    const mixedYield10DM = (fA.biogasYield10DM * pctA) + (fB.biogasYield10DM * pctB);
+    activeMix.forEach(item => {
+      const fs = FEEDSTOCKS[item.id];
+      if (!fs) return;
+      const fraction = item.percentage / 100;
+      mixedYield10DM += fs.biogasYield10DM * fraction;
+      mixedMethaneBase += fs.methaneBasePercent * fraction;
+
+      // Track dominant for visuals
+      if (item.percentage > maxPct) {
+        maxPct = item.percentage;
+        dominantFeedstockId = item.id;
+      }
+      
+      // Check N levels
+      if (fs.nitrogenPotential === 'High' || fs.nitrogenPotential === 'Very High') {
+        hasHighN = true;
+        if (item.percentage > 30) highNRisk = true;
+      }
+    });
     
     // Dry Matter Factor (Clamp between 0.6 and 1.3)
     const dmFactorRaw = dryMatter / 10;
@@ -153,7 +171,6 @@ const App: React.FC = () => {
     const biogasHourly = biogasDaily / 24;
 
     // 3. Methane Calculation
-    const baseMethane = (fA.methaneBasePercent * pctA) + (fB.methaneBasePercent * pctB);
     const tempBonus = temperature === 'thermo' ? 1 : 0;
     
     // Overload Penalties
@@ -161,7 +178,7 @@ const App: React.FC = () => {
     if (retentionTime < 30) retentionPenalty += 2;
     if (retentionTime < 20) retentionPenalty += 3;
 
-    let finalMethane = baseMethane + tempBonus - retentionPenalty;
+    let finalMethane = mixedMethaneBase + tempBonus - retentionPenalty;
     finalMethane = Math.max(45, Math.min(70, finalMethane)); // Clamp display
 
     // 4. Power Outputs
@@ -187,9 +204,6 @@ const App: React.FC = () => {
     // 6. Carbon Savings
     const annualElectricMWh = powerElectric * SIMULATION_CONSTANTS.OPERATING_HOURS;
     const carbonSavings = annualElectricMWh * SIMULATION_CONSTANTS.CARBON_COEFF;
-    
-    // Identify High N Feedstock
-    const isHighN = (pctA > 0.5 && (feedstockA === 'food_waste')) || (pctB > 0.5 && (feedstockB === 'food_waste'));
 
     return {
       gas: Math.round(biogasHourly),
@@ -203,11 +217,11 @@ const App: React.FC = () => {
       carbonSavings: Math.round(carbonSavings),
       // Nutrient Data
       dailyN, dailyP, dailyK, annualN, landRequired,
-      isHighN,
+      isHighN: highNRisk,
       // For visual/context passing
-      dominantFeedstock: pctB > 0.5 ? fB : fA
+      dominantFeedstock: FEEDSTOCKS[dominantFeedstockId]
     };
-  }, [feedstockA, feedstockB, mixRatio, dryMatter, temperature, feedRate, retentionTime]);
+  }, [activeMix, dryMatter, temperature, feedRate, retentionTime]);
 
 
   const handlePartSelect = (id: string) => {
@@ -278,9 +292,7 @@ const App: React.FC = () => {
           temperature={temperature} setTemperature={setTemperature}
           retentionTime={retentionTime} setRetentionTime={setRetentionTime}
           isRetentionLocked={isRetentionLocked} setIsRetentionLocked={setIsRetentionLocked}
-          feedstockA={feedstockA} setFeedstockA={setFeedstockA}
-          feedstockB={feedstockB} setFeedstockB={setFeedstockB}
-          mixRatio={mixRatio} setMixRatio={setMixRatio}
+          activeMix={activeMix} onMixChange={setActiveMix}
           onClose={() => setShowControls(false)}
         />
       )}
@@ -423,9 +435,7 @@ const App: React.FC = () => {
                 temperature={temperature} setTemperature={setTemperature}
                 retentionTime={retentionTime} setRetentionTime={setRetentionTime}
                 isRetentionLocked={isRetentionLocked} setIsRetentionLocked={setIsRetentionLocked}
-                feedstockA={feedstockA} setFeedstockA={setFeedstockA}
-                feedstockB={feedstockB} setFeedstockB={setFeedstockB}
-                mixRatio={mixRatio} setMixRatio={setMixRatio}
+                activeMix={activeMix} onMixChange={setActiveMix}
               />
             </div>
 
